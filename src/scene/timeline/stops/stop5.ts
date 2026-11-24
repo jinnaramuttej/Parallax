@@ -2,7 +2,7 @@ import { SHOTS } from "../../story";
 import { STOPS, transition } from "../../timing";
 import { revealCopy } from "../copy";
 import type { StopContext } from "../master";
-import { drift, fadeTo, flash, shotTo } from "./shared";
+import { drift, fadeTo, flash } from "./shared";
 
 /**
  * Stop 5, 3 AM. Deploy, success, arms up.
@@ -14,7 +14,13 @@ export function stop5({ tl, cam, copy, el }: StopContext) {
   const s = STOPS[5];
   const t4 = transition(4);
 
-  shotTo(tl, cam, SHOTS[5], t4.start, t4.end - t4.start);
+  // Follow him back across the room first (on narrow screens the camera
+  // would otherwise lag and lose him), then settle on a shot that fits him
+  // and the monitor. Zoom, tilt and depth ease over the whole transition.
+  const { fx, fy, ...lens } = SHOTS[5];
+  tl.to(cam, { fx: 680, fy: 520, duration: 1.0, ease: "sine.inOut" }, t4.start);
+  tl.to(cam, { fx, fy, duration: 1.1, ease: "sine.inOut" }, t4.start + 1.0);
+  tl.to(cam, { ...lens, duration: t4.end - t4.start + 0.4, ease: "sine.inOut" }, t4.start - 0.25);
   drift(tl, cam, t4.end, s.holdEnd - t4.end, -8, 4);
 
   revealCopy(tl, copy.get(5), s.holdStart + 0.75);

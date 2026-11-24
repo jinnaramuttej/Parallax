@@ -56,7 +56,7 @@ export const SHOTS: Shot[] = [
   { fx: 790, fy: 520, zoom: 1.16, rot: 0, depth: 0.6 },
   { fx: 700, fy: 500, zoom: 1.06, rot: 1.2, depth: 1.4 },
   { fx: 1280, fy: 560, zoom: 1.12, rot: -0.8, depth: 1.2 },
-  { fx: 800, fy: 470, zoom: 1, rot: 0, depth: 1.5 },
+  { fx: 760, fy: 470, zoom: 1, rot: 0, depth: 1.5 },
 ];
 
 /** Story unit at which the deploy goes green (confetti fires here). */
