@@ -56,7 +56,7 @@ export function addCharacterBlocking({ tl, q }: BuildContext) {
   poseTo(tl, rig, "typing", t4.start + 0.98, 0.3);
   express(tl, rig, { mouth: "flat" }, t4.start + 1.0);
   typingWiggle(tl, rig, t4.start + 1.28, 0.22);
-  poseTo(tl, rig, "stand", s5.holdStart + 0.64, 0.36);
+  poseTo(tl, rig, { ...POSES.stand, x: 690 }, s5.holdStart + 0.64, 0.36);
   poseTo(tl, rig, "celebrate", s5.holdStart + 0.98, 0.42, "back.out(1.2)");
   express(tl, rig, { mouth: "o" }, s5.holdStart + 0.98);
 
