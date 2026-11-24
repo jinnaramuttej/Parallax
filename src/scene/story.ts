@@ -40,9 +40,9 @@ export const COMMIT_EVENTS = [
   t2.start + 0.3,
   t2.start + 0.7,
   t3.start + 0.6,
-  t4.start + 1.1,
-  t4.start + 1.25,
-  t4.start + 1.4,
+  t4.start + 1.2,
+  t4.start + 1.32,
+  t4.start + 1.44,
   s5.holdStart + 0.25,
   s5.holdStart + 0.62,
 ];

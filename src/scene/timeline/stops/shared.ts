@@ -5,9 +5,13 @@ import { rotate } from "../rig";
 
 type TL = gsap.core.Timeline;
 
-/** Move the camera to a stop's shot over a transition. */
+/**
+ * Move the camera to a stop's shot over a transition. The move starts a
+ * little before the transition and settles a little after it, which keeps
+ * the peak pan speed low (no whip pans).
+ */
 export function shotTo(tl: TL, cam: CameraState, shot: Shot, at: number, duration: number) {
-  tl.to(cam, { ...shot, duration, ease: "sine.inOut" }, at);
+  tl.to(cam, { ...shot, duration: duration + 0.4, ease: "sine.inOut" }, at - 0.25);
 }
 
 /** Slow camera drift (canvas units), continuous from one stop into the next. */

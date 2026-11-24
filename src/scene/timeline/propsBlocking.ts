@@ -10,7 +10,7 @@ export function storyCanTimes() {
   return [
     s2.holdStart + 0.35, // 1 PM, can #1
     s3.holdStart + 0.15, // 6 PM, can #2
-    t4.start + 0.8, // the fridge can lands on the desk
+    t4.start + 0.98, // the fridge can lands on the desk
     s5.holdStart - 0.3, // one more for the final push
   ];
 }

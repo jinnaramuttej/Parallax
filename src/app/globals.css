@@ -32,7 +32,7 @@
   --tint-golden: #ff9f4f;
   --tint-night: #343a8a;
   --tint-error: #ff4d5e;
-  --lamp-glow: rgb(255 209 102 / 0.8);
+  --lamp-glow: rgb(255 209 102 / 0.6);
   --screen-glow: rgb(150 200 255 / 0.55);
 
   --sky-night-1: #0d0f2e;
@@ -201,14 +201,16 @@ body {
   mix-blend-mode: screen;
 }
 .glow-lamp {
-  background: radial-gradient(closest-side at 48% 42%, var(--lamp-glow), transparent);
+  background: radial-gradient(closest-side at 46% 44%, var(--lamp-glow), transparent);
   opacity: var(--lamp, 0);
 }
 .glow-screen {
-  background: radial-gradient(closest-side at 50% 46%, var(--screen-glow), transparent);
+  background: radial-gradient(closest-side at 62% 40%, var(--screen-glow), transparent);
   opacity: var(--glow, 0);
 }
+/* Soft pool of cold light from the open fridge, mostly on the floor. */
 .glow-spill {
+  background: radial-gradient(farthest-side at 70% 45%, var(--fridge-light), transparent 75%);
   opacity: 0;
 }
 .glow-success {

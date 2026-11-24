@@ -21,7 +21,7 @@ export function stop4({ tl, cam, copy, el }: StopContext) {
   revealCopy(tl, copy.get(4), s.holdStart + 0.1);
   exitCopy(tl, copy.get(4), s.holdEnd + 0.05);
 
-  fadeTo(tl, el("fridge-spill"), s.holdStart - 0.2, 0.25, 0.95);
+  fadeTo(tl, el("fridge-spill"), s.holdStart - 0.2, 0.25, 0.75);
   fadeTo(tl, el("fridge-spill"), t4.start, 0.2, 0);
 
   const star = el("shooting-star");

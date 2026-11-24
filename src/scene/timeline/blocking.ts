@@ -49,16 +49,16 @@ export function addCharacterBlocking({ tl, q }: BuildContext) {
   express(tl, rig, { mouth: "smile" }, s4.holdStart + 0.6);
 
   // 4 -> 5: turn, walk back, sit, type the last fix, then celebrate.
-  turn(tl, rig, -1, t4.start + 0.05);
-  walk(tl, rig, POSES.holdCan.x, 640, t4.start + 0.12, 0.6);
-  turn(tl, rig, 1, t4.start + 0.72);
-  tl.set(rig.handCan, { opacity: 0 }, t4.start + 0.8);
-  poseTo(tl, rig, "typing", t4.start + 0.78, 0.3);
-  express(tl, rig, { mouth: "flat" }, t4.start + 0.8);
-  typingWiggle(tl, rig, t4.start + 1.08, 0.4);
-  poseTo(tl, rig, "stand", s5.holdStart + 0.65, 0.2);
-  poseTo(tl, rig, "celebrate", s5.holdStart + 0.85, 0.3, "back.out(1.6)");
-  express(tl, rig, { mouth: "o" }, s5.holdStart + 0.85);
+  turn(tl, rig, -1, t4.start + 0.02);
+  walk(tl, rig, POSES.holdCan.x, 640, t4.start + 0.12, 0.82);
+  turn(tl, rig, 1, t4.start + 0.92);
+  tl.set(rig.handCan, { opacity: 0 }, t4.start + 0.98);
+  poseTo(tl, rig, "typing", t4.start + 0.98, 0.3);
+  express(tl, rig, { mouth: "flat" }, t4.start + 1.0);
+  typingWiggle(tl, rig, t4.start + 1.28, 0.22);
+  poseTo(tl, rig, "stand", s5.holdStart + 0.64, 0.36);
+  poseTo(tl, rig, "celebrate", s5.holdStart + 0.98, 0.42, "back.out(1.2)");
+  express(tl, rig, { mouth: "o" }, s5.holdStart + 0.98);
 
   return rig;
 }

@@ -129,7 +129,7 @@ export function turn(
   rig: Rig,
   dir: 1 | -1,
   at: number,
-  duration = 0.08,
+  duration = 0.14,
 ) {
   tl.to(rig.face, { ...scale(dir, 1), duration, ease: "power1.inOut" }, at);
 }
