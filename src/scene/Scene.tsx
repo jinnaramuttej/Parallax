@@ -2,7 +2,9 @@
 
 import { useLayoutEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { Character } from "./character/Character";
 import { Celestial } from "./layers/Celestial";
+import { Room } from "./room/Room";
 import { Clouds } from "./layers/Clouds";
 import { Sky } from "./layers/Sky";
 import { Skyline } from "./layers/Skyline";
@@ -33,7 +35,11 @@ export function Scene() {
         reduce: "(prefers-reduced-motion: reduce)",
       },
       (context) => {
-        buildMasterTimeline({ track, stage, reduce: Boolean(context.conditions?.reduce) });
+        buildMasterTimeline({
+          track,
+          stage,
+          reduce: Boolean(context.conditions?.reduce),
+        });
       },
       stage,
     );
@@ -61,6 +67,8 @@ export function Scene() {
           <Celestial />
           <Clouds />
           <Skyline />
+          <Room />
+          <Character />
         </div>
         <StopLabels />
       </div>

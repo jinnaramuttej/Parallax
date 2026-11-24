@@ -8,7 +8,12 @@ export function addStopLabels({ tl, q }: BuildContext) {
     if (!el) continue;
     const fade = 0.25;
     if (stop.index > 0) {
-      tl.fromTo(el, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: fade }, stop.holdStart - fade);
+      tl.fromTo(
+        el,
+        { autoAlpha: 0, y: 24 },
+        { autoAlpha: 1, y: 0, duration: fade },
+        stop.holdStart - fade,
+      );
     }
     if (stop.index < STOPS.length - 1) {
       tl.to(el, { autoAlpha: 0, y: -24, duration: fade }, stop.holdEnd);

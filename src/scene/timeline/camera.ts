@@ -56,8 +56,10 @@ export function createCamera(stage: HTMLElement, reduce: boolean) {
     const maxY = Math.max(0, (CANVAS_H * s * zoom - h) / 2) + 30 * s;
     const driftX = reduce ? 0 : cam.dx * s;
     const driftY = reduce ? 0 : cam.dy * s;
-    const panX = clamp(-(cam.fx - CANVAS_W / 2) * s * zoom, -maxX, maxX) + driftX;
-    const panY = clamp(-(cam.fy - CANVAS_H / 2) * s * zoom, -maxY, maxY) + driftY;
+    const panX =
+      clamp(-(cam.fx - CANVAS_W / 2) * s * zoom, -maxX, maxX) + driftX;
+    const panY =
+      clamp(-(cam.fy - CANVAS_H / 2) * s * zoom, -maxY, maxY) + driftY;
 
     for (const layer of layers) {
       // Reduced motion: every layer moves together (no depth parallax), and

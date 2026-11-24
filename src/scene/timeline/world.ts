@@ -38,16 +38,34 @@ const SKY_KEYS: [number, SkyState][] = [
   [1265, "night"],
 ];
 
-const STARS: Key[] = [[330, 0.85], [400, 0], [1170, 0], [1265, 1]];
-const CLOUD_OPACITY: Key[] = [[340, 0.4], [430, 0.95], [1080, 0.95], [1190, 0.16]];
-const CITY_NIGHT: Key[] = [[340, 0.85], [450, 0], [1110, 0], [1250, 1]];
+const STARS: Key[] = [
+  [330, 0.85],
+  [400, 0],
+  [1170, 0],
+  [1265, 1],
+];
+const CLOUD_OPACITY: Key[] = [
+  [340, 0.4],
+  [430, 0.95],
+  [1080, 0.95],
+  [1190, 0.16],
+];
+const CITY_NIGHT: Key[] = [
+  [340, 0.85],
+  [450, 0],
+  [1110, 0],
+  [1250, 1],
+];
 const SUNRISE = 360;
 const SUNSET = 1170;
 const MOONRISE = 1150;
 const MOONSET = 1740;
 const DAY_START = 359;
 
-const Z = Object.fromEntries(SKY_STATES.map((s, i) => [s, i])) as Record<SkyState, number>;
+const Z = Object.fromEntries(SKY_STATES.map((s, i) => [s, i])) as Record<
+  SkyState,
+  number
+>;
 
 export function createWorld(stage: HTMLElement) {
   const q = gsap.utils.selector(stage);
@@ -65,7 +83,9 @@ export function createWorld(stage: HTMLElement) {
     };
   }
 
-  const sky = SKY_STATES.map((s) => setter(q(`[data-sky="${s}"]`)[0], "opacity", `sky-${s}`));
+  const sky = SKY_STATES.map((s) =>
+    setter(q(`[data-sky="${s}"]`)[0], "opacity", `sky-${s}`),
+  );
   const stars = setter(q('[data-el="stars"]')[0], "opacity", "stars");
   const sunX = setter(q('[data-el="sun"]')[0], "xPercent", "sunX");
   const sunY = setter(q('[data-el="sun"]')[0], "yPercent", "sunY");

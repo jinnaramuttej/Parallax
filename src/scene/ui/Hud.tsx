@@ -35,8 +35,22 @@ export function Hud() {
         <div className="hud-counter">
           <dt>
             <svg viewBox="0 0 16 24" aria-hidden className="hud-icon">
-              <rect x="2" y="3" width="12" height="19" rx="3" fill="var(--can)" />
-              <rect x="3" y="1" width="10" height="3" rx="1.5" fill="var(--can-dark)" />
+              <rect
+                x="2"
+                y="3"
+                width="12"
+                height="19"
+                rx="3"
+                fill="var(--can)"
+              />
+              <rect
+                x="3"
+                y="1"
+                width="10"
+                height="3"
+                rx="1.5"
+                fill="var(--can-dark)"
+              />
               <path d="M9 7 5.5 13H8l-1 5 3.5-6H8z" fill="var(--paper)" />
             </svg>
             Cans
@@ -46,8 +60,20 @@ export function Hud() {
         <div className="hud-counter">
           <dt>
             <svg viewBox="0 0 24 24" aria-hidden className="hud-icon">
-              <path d="M2 12h6M16 12h6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-              <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2.5" />
+              <path
+                d="M2 12h6M16 12h6"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <circle
+                cx="12"
+                cy="12"
+                r="4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              />
             </svg>
             Commits
           </dt>

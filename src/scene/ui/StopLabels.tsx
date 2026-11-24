@@ -9,7 +9,9 @@ export function StopLabels() {
           key={stop.index}
           data-stop-label={stop.index}
           className="stop-label"
-          style={stop.index === 0 ? undefined : { visibility: "hidden", opacity: 0 }}
+          style={
+            stop.index === 0 ? undefined : { visibility: "hidden", opacity: 0 }
+          }
         >
           <span>Stop {stop.index}</span>
           {stop.time}: {stop.name}
