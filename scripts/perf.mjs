@@ -14,9 +14,9 @@ await p.goto(process.env.URL ?? "http://localhost:3002", { waitUntil: "networkid
 await p.waitForFunction(() => document.querySelector("[data-loader][data-done]"), null, { timeout: 20000 });
 await p.waitForTimeout(500);
 await p.evaluate(() => {
-  window.__perf = { frames: [], long: [], cls: 0 };
+  window.__perf = { frames: [], long: [], cls: 0, loadCls: 0, start: performance.now() };
   new PerformanceObserver((l) => l.getEntries().forEach((e) => window.__perf.long.push(Math.round(e.duration)))).observe({ type: "longtask", buffered: false });
-  new PerformanceObserver((l) => l.getEntries().forEach((e) => { if (!e.hadRecentInput) window.__perf.cls += e.value; })).observe({ type: "layout-shift", buffered: true });
+  new PerformanceObserver((l) => l.getEntries().forEach((e) => { if (e.hadRecentInput) return; if (e.startTime < window.__perf.start) window.__perf.loadCls += e.value; else window.__perf.cls += e.value; })).observe({ type: "layout-shift", buffered: true });
   let last = performance.now();
   const loop = (t) => { window.__perf.frames.push(t - last); last = t; if (!window.__perf.stop) requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
@@ -95,7 +95,8 @@ const report = {
   slowFramesPct: +((frames.filter((f) => f > 20).length / frames.length) * 100).toFixed(1),
   longTasks: perf.long.length,
   longestTaskMs: Math.max(0, ...perf.long),
-  cls: +perf.cls.toFixed(4),
+  clsDuringScroll: +perf.cls.toFixed(4),
+  clsBeforeScroll: +perf.loadCls.toFixed(4),
   trace: {
     layoutCount: count("Layout"),
     layoutMs: +dur("Layout").toFixed(1),
