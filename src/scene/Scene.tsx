@@ -25,6 +25,9 @@ import { CopyLayer } from "./ui/Copy";
 import { setupInteractions } from "./interactions";
 import { Confetti } from "./ui/Confetti";
 import { Hotspots } from "./ui/Hotspots";
+import { Loader } from "./ui/Loader";
+import { ScrollHint } from "./ui/ScrollHint";
+import { Scrubber } from "./ui/Scrubber";
 import { measureViewport } from "./viewport";
 
 export function Scene() {
@@ -96,7 +99,10 @@ export function Scene() {
         <CopyLayer />
       </div>
       <Hud />
+      <Scrubber />
+      <ScrollHint />
       <Confetti />
+      <Loader />
     </section>
   );
 }
