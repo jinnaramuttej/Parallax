@@ -1,7 +1,7 @@
 /** Office chair, seen from the side. The character sits at hip (600, 677). */
 export function Chair() {
   return (
-    <g fill="var(--indigo-dark)">
+    <g data-el="chair" fill="var(--indigo-dark)">
       <rect
         x="542"
         y="526"

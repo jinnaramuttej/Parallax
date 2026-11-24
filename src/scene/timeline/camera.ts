@@ -14,6 +14,8 @@ export type CameraState = {
   rot: number;
   dx: number;
   dy: number;
+  /** Parallax spread: >1 pushes layers further apart, <1 flattens them. */
+  depth: number;
 };
 
 type Layer = {
@@ -35,6 +37,7 @@ export function createCamera(stage: HTMLElement, reduce: boolean) {
     rot: 0,
     dx: 0,
     dy: 0,
+    depth: 1,
   };
 
   const layers: Layer[] = Array.from(
@@ -64,7 +67,7 @@ export function createCamera(stage: HTMLElement, reduce: boolean) {
     for (const layer of layers) {
       // Reduced motion: every layer moves together (no depth parallax), and
       // only as much as needed to keep the focus point on screen.
-      const k = reduce ? 1 : layer.speed;
+      const k = reduce ? 1 : Math.max(0, 1 + (layer.speed - 1) * cam.depth);
       layer.setX(panX * k);
       layer.setY(panY * k);
       layer.setScale(1 + (zoom - 1) * k);

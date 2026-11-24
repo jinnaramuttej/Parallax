@@ -70,6 +70,18 @@ export function Head() {
         fill="var(--ink)"
         opacity="0"
       />
+      <g
+        data-el="dnd"
+        opacity="0"
+        stroke="var(--accent)"
+        strokeWidth="3"
+        strokeLinecap="round"
+        fill="none"
+      >
+        <path d="M-30 -46Q-40 -30 -30 -14" />
+        <path d="M-42 -54Q-56 -30 -42 -6" />
+        <path d="M-54 -62Q-72 -30 -54 2" />
+      </g>
       <g data-el="headphones" opacity="0">
         <path
           d="M-15 -34C-15 -76 32 -78 36 -46"

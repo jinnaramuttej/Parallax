@@ -1,18 +1,28 @@
 import { gsap } from "@/lib/gsap";
 import { dayStore } from "../dayStore";
 import { clockAt, TOTAL } from "../timing";
-import { createCamera } from "./camera";
-import { createWorld } from "./world";
-import { addStopLabels } from "./stopLabels";
-import { addCameraMoves } from "./cameraMoves";
 import { addCharacterBlocking } from "./blocking";
+import { createCamera, type CameraState } from "./camera";
+import { splitCopy } from "./copy";
 import { addPropsBlocking } from "./propsBlocking";
+import type { Rig } from "./rig";
+import { STOP_BUILDERS } from "./stops";
+import { createWorld } from "./world";
 
 export type BuildContext = {
   tl: gsap.core.Timeline;
   stage: HTMLElement;
   q: (selector: string) => Element[];
   reduce: boolean;
+  /** Extra cleanup (e.g. SplitText reverts) run when the timeline is torn down. */
+  cleanup: (() => void)[];
+};
+
+export type StopContext = BuildContext & {
+  cam: CameraState;
+  rig: Rig;
+  copy: ReturnType<typeof splitCopy>;
+  el: (name: string) => Element;
 };
 
 /**
@@ -50,19 +60,23 @@ export function buildMasterTimeline({
     camera.apply();
   }
 
-  const ctx: BuildContext = {
-    tl,
-    stage,
-    q: gsap.utils.selector(stage),
-    reduce,
-  };
-  addCameraMoves(ctx, camera.cam);
-  addCharacterBlocking(ctx);
+  const q = gsap.utils.selector(stage);
+  const ctx: BuildContext = { tl, stage, q, reduce, cleanup: [] };
+  const rig = addCharacterBlocking(ctx);
   addPropsBlocking(ctx);
-  addStopLabels(ctx);
+
+  const stopCtx: StopContext = {
+    ...ctx,
+    cam: camera.cam,
+    rig,
+    copy: splitCopy(ctx),
+    el: (name) => q(`[data-el="${name}"]`)[0],
+  };
+  STOP_BUILDERS.forEach((build) => build(stopCtx));
 
   // Pad to exactly TOTAL units so progress maps 1:1 to story time.
   tl.set({}, {}, TOTAL);
   render();
-  return { tl, render };
+
+  return () => ctx.cleanup.forEach((fn) => fn());
 }

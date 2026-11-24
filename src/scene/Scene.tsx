@@ -21,7 +21,7 @@ import { Stars } from "./layers/Stars";
 import { buildMasterTimeline } from "./timeline/master";
 import { STOPS, TOTAL, UNIT_VH } from "./timing";
 import { Hud } from "./ui/Hud";
-import { StopLabels } from "./ui/StopLabels";
+import { CopyLayer } from "./ui/Copy";
 import { measureViewport } from "./viewport";
 
 export function Scene() {
@@ -43,13 +43,12 @@ export function Scene() {
         motion: "(prefers-reduced-motion: no-preference)",
         reduce: "(prefers-reduced-motion: reduce)",
       },
-      (context) => {
+      (context) =>
         buildMasterTimeline({
           track,
           stage,
           reduce: Boolean(context.conditions?.reduce),
-        });
-      },
+        }),
       stage,
     );
 
@@ -69,6 +68,7 @@ export function Scene() {
       data-labels={JSON.stringify(STOPS.map((s) => `${s.time} ${s.name}`))}
       aria-label="A developer's day, from 5:59 AM to 3 AM"
     >
+      <h1 className="sr-only">24 Hours of a Dev</h1>
       <div ref={stageRef} className="scene-stage" data-scene-stage>
         <div className="scene-shake" data-el="shake">
           <Sky />
@@ -86,7 +86,7 @@ export function Scene() {
           <ForegroundMug />
           <ForegroundLeaves />
         </div>
-        <StopLabels />
+        <CopyLayer />
       </div>
       <Hud />
     </section>

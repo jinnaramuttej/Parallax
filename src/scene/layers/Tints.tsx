@@ -38,7 +38,13 @@ export function Tints() {
       <Tint name="golden" />
       <Tint name="night" />
       <Tint name="error" />
-      <div className="golden-beam" style={box(140, 70, 1000, 830)}>
+      <div className="tint-vignette" data-el="vignette" />
+      <div className="golden-beam" data-el="beam-morning" style={box(480, 70, 1000, 830)}>
+        <svg viewBox="480 70 1000 830" preserveAspectRatio="none">
+          <path d="M480 70H1120V470L1480 900H860L480 470Z" fill="var(--sun)" />
+        </svg>
+      </div>
+      <div className="golden-beam" data-el="beam-evening" style={box(140, 70, 1000, 830)}>
         <svg viewBox="140 70 1000 830" preserveAspectRatio="none">
           <path d="M480 70H1120V470L900 900H140L480 470Z" fill="var(--sun)" />
         </svg>

@@ -211,6 +211,36 @@ body {
 .glow-spill {
   opacity: 0;
 }
+.glow-success {
+  background: radial-gradient(closest-side, rgb(139 224 78 / 0.85), transparent);
+  opacity: 0;
+}
+.tint-vignette {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(closest-side, transparent 55%, var(--ink));
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* Shooting star: a streak that slides along its rotated track. */
+.shooting-star {
+  position: absolute;
+  transform: rotate(16deg);
+  transform-origin: 0 50%;
+}
+.shooting-star span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34%;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, var(--star));
+  opacity: 0;
+  will-change: transform, opacity;
+}
 
 /* Floating Zs (compositor-only animation). */
 .zzz {
@@ -383,34 +413,82 @@ body {
   height: 16px;
 }
 
-/* Placeholder stop labels (timing check). */
-.stop-labels {
+/* Stop copy: headline + one line, in a clear zone away from the guy. */
+.copy-layer {
   position: absolute;
   inset: 0;
   z-index: 20;
   pointer-events: none;
 }
 
-.stop-label {
+.copy {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 12%;
-  width: max-content;
-  max-width: calc(100% - 32px);
-  margin: 0 auto;
-  padding: 10px 16px;
-  border-radius: 12px;
-  background: var(--paper);
+  top: clamp(92px, 12vh, 130px);
+  width: min(30vw, 420px);
+}
+.copy-left {
+  left: clamp(16px, 4vw, 64px);
+}
+.copy-right {
+  right: clamp(16px, 4vw, 64px);
+}
+.copy-note {
+  position: relative;
+  padding: clamp(18px, 2vw, 28px) clamp(20px, 2.2vw, 32px) clamp(20px, 2.2vw, 30px);
+  background: var(--note);
   color: var(--ink);
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
-  font-size: 15px;
+  rotate: var(--tilt);
+  box-shadow: 0 10px 0 -4px rgb(31 27 61 / 0.25);
+}
+/* A strip of tape holding the note up. */
+.copy-note::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 84px;
+  height: 24px;
+  margin-left: -42px;
+  background: rgb(255 248 236 / 0.6);
+  rotate: calc(var(--tilt) * -2);
 }
 
-.stop-label span {
-  margin-right: 10px;
-  font-weight: 700;
-  color: var(--accent-dark);
+.copy-title {
+  margin: 0;
+  font-size: clamp(1.9rem, 3.2vw, 3.3rem);
+  font-weight: 800;
+  font-variation-settings: "wdth" 88, "opsz" 72;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.copy-sub {
+  max-width: 34ch;
+  margin: 0.7em 0 0;
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  .copy,
+  .copy-left,
+  .copy-right {
+    top: 88px;
+    left: 14px;
+    right: 14px;
+    width: auto;
+  }
+  .copy-note {
+    padding: 16px 18px 18px;
+  }
+  .copy-title {
+    font-size: 2rem;
+  }
+  .copy-sub {
+    font-size: 0.95rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

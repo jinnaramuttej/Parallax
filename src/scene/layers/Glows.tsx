@@ -16,6 +16,11 @@ export function Glows() {
       <div className="glow glow-lamp" style={box(860, 330, 480, 400)} />
       <div className="glow glow-screen" style={box(560, 330, 640, 420)} />
       <div
+        className="glow glow-success"
+        data-el="success-flash"
+        style={box(520, 220, 840, 640)}
+      />
+      <div
         className="glow-spill"
         data-el="fridge-spill"
         style={box(900, 500, 450, 400)}

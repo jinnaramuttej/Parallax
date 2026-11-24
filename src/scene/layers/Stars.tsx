@@ -1,5 +1,6 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { r1, seeded } from "../random";
+import { box } from "../viewport";
 
 function starField(seed: number, count: number) {
   const rnd = seeded(seed);
@@ -33,6 +34,9 @@ export function Stars() {
         <div className="star-twinkle absolute inset-0">
           <Field stars={TWINKLE} />
         </div>
+      </div>
+      <div className="shooting-star" style={box(560, 110, 420, 10)}>
+        <span data-el="shooting-star" />
       </div>
     </ParallaxLayer>
   );

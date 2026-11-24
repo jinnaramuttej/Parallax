@@ -1,13 +1,28 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { dayStore } from "../dayStore";
+import { gsap } from "@/lib/gsap";
+import { bonusCansStore, dayStore } from "../dayStore";
+import { CAN_EVENTS, COMMIT_EVENTS } from "../story";
 import { clockAt, formatClock, TOTAL } from "../timing";
+
+const countAt = (events: number[], unit: number) =>
+  events.reduce((n, at) => (unit >= at ? n + 1 : n), 0);
+
+/** Swap the number and give it a small pop (realtime, not scrubbed). */
+function popTo(el: HTMLElement | null, value: number, animate: boolean) {
+  if (!el || el.textContent === String(value)) return;
+  el.textContent = String(value);
+  if (!animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  gsap.fromTo(el, { scale: 1.7 }, { scale: 1, duration: 0.45, ease: "back.out(3)", overwrite: true });
+}
 
 /** Fixed clock + counters. Writes text straight to the DOM on progress. */
 export function Hud() {
   const timeRef = useRef<HTMLSpanElement>(null);
   const periodRef = useRef<HTMLSpanElement>(null);
+  const cansRef = useRef<HTMLElement>(null);
+  const commitsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let last = "";
@@ -19,8 +34,24 @@ export function Hud() {
       if (timeRef.current) timeRef.current.textContent = time;
       if (periodRef.current) periodRef.current.textContent = period;
     };
+    let ready = false;
+    const counters = () => {
+      const unit = dayStore.get() * TOTAL;
+      popTo(cansRef.current, countAt(CAN_EVENTS, unit) + bonusCansStore.get(), ready);
+      popTo(commitsRef.current, countAt(COMMIT_EVENTS, unit), ready);
+    };
     update(dayStore.get());
-    return dayStore.subscribe(update);
+    counters();
+    ready = true;
+    const offDay = dayStore.subscribe((p) => {
+      update(p);
+      counters();
+    });
+    const offBonus = bonusCansStore.subscribe(counters);
+    return () => {
+      offDay();
+      offBonus();
+    };
   }, []);
 
   return (
@@ -55,7 +86,9 @@ export function Hud() {
             </svg>
             Cans
           </dt>
-          <dd data-counter="cans">0</dd>
+          <dd ref={cansRef} data-counter="cans">
+            0
+          </dd>
         </div>
         <div className="hud-counter">
           <dt>
@@ -77,7 +110,9 @@ export function Hud() {
             </svg>
             Commits
           </dt>
-          <dd data-counter="commits">0</dd>
+          <dd ref={commitsRef} data-counter="commits">
+            0
+          </dd>
         </div>
       </dl>
     </div>
