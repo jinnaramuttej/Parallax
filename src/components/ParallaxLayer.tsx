@@ -4,37 +4,29 @@ import {
   useLayoutEffect,
   useRef,
   type ComponentPropsWithoutRef,
-  type RefObject,
 } from "react";
 import { gsap } from "@/lib/gsap";
 
 type ParallaxLayerProps = ComponentPropsWithoutRef<"div"> & {
   /**
-   * On-screen speed relative to the scroll.
-   * 0 = stuck to the viewport, 1 = scrolls normally,
-   * <1 = background (sky, skyline), >1 = foreground.
+   * Depth of the layer.
+   * Inside the scene stage: how strongly the camera (pan, zoom, tilt) moves
+   * this layer. 0 = fixed sky, 1 = the room plane, >1 = foreground.
+   * Anywhere else: on-screen speed relative to the scroll (1 = normal,
+   * <1 = background, >1 = foreground).
    */
   speed: number;
-  /**
-   * Set when the layer lives inside a sticky/pinned stage. The layer is then
-   * moved by `speed` x the trigger's scroll length (it does not scroll itself).
-   */
-  pinned?: boolean;
-  /**
-   * Element whose scroll range drives the layer. Defaults to the parent.
-   * For `pinned`, pass the tall scroll track, not the sticky stage.
-   */
-  trigger?: RefObject<HTMLElement | null>;
 };
 
 /**
- * A scroll-scrubbed parallax layer. Animates `transform` only (GSAP `y`),
- * and does nothing when the user prefers reduced motion.
+ * One parallax layer. Animates `transform` only.
+ *
+ * In the pinned scene, the master timeline's camera reads `data-parallax-speed`
+ * and moves every layer itself, so this component stays passive there.
+ * Outside the scene it runs its own scrubbed ScrollTrigger.
  */
 export function ParallaxLayer({
   speed,
-  pinned = false,
-  trigger,
   style,
   children,
   ...rest
@@ -43,35 +35,16 @@ export function ParallaxLayer({
 
   useLayoutEffect(() => {
     const el = ref.current;
-    const triggerEl = trigger?.current ?? el?.parentElement;
-    if (!el || !triggerEl) return;
+    if (!el || el.closest("[data-scene-stage]")) return;
+    const trigger = el.parentElement;
+    if (!trigger) return;
 
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      if (pinned) {
-        // Stage doesn't move, so all visible motion comes from the transform.
-        gsap.fromTo(
-          el,
-          { y: 0 },
-          {
-            y: () => -speed * (triggerEl.offsetHeight - window.innerHeight),
-            ease: "none",
-            scrollTrigger: {
-              trigger: triggerEl,
-              start: "top top",
-              end: "bottom bottom",
-              scrub: true,
-              invalidateOnRefresh: true,
-            },
-          },
-        );
-        return;
-      }
-
-      // Layer scrolls with the page; offset it so it appears to move at `speed`.
-      // Centered so the layer sits at y=0 when the trigger is mid-viewport.
+      // Offset the layer so it appears to move at `speed`, centred so it
+      // sits at y=0 when the trigger is mid-viewport.
       const travel = () =>
-        ((1 - speed) * (window.innerHeight + triggerEl.offsetHeight)) / 2;
+        ((1 - speed) * (window.innerHeight + trigger.offsetHeight)) / 2;
       gsap.fromTo(
         el,
         { y: () => -travel() },
@@ -79,7 +52,7 @@ export function ParallaxLayer({
           y: () => travel(),
           ease: "none",
           scrollTrigger: {
-            trigger: triggerEl,
+            trigger,
             start: "top bottom",
             end: "bottom top",
             scrub: true,
@@ -88,12 +61,16 @@ export function ParallaxLayer({
         },
       );
     });
-
     return () => mm.revert();
-  }, [speed, pinned, trigger]);
+  }, [speed]);
 
   return (
-    <div ref={ref} style={{ willChange: "transform", ...style }} {...rest}>
+    <div
+      ref={ref}
+      data-parallax-speed={speed}
+      style={{ willChange: "transform", ...style }}
+      {...rest}
+    >
       {children}
     </div>
   );

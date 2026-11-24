@@ -1,26 +1,251 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------ */
+/* Palette: the only place colours are defined.                        */
+/* ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #1f1b3d;
+  --paper: #fff8ec;
+  --wall: #c7d0f0;
+  --wall-shade: #aebae6;
+  --floor: #b97a57;
+  --floor-shade: #9c6244;
+  --wood: #8a5639;
+  --wood-dark: #66402b;
+  --accent: #ff8a3d;
+  --accent-dark: #df6a20;
+  --indigo: #4553a8;
+  --indigo-dark: #343f86;
+  --can: #8be04e;
+  --can-dark: #5aae24;
+  --error: #ff4d5e;
+  --sun: #ffd166;
+  --skin: #c98b63;
+  --skin-dark: #a86f4b;
+  --hair: #2a2140;
+  --plant: #2f9e74;
+  --plant-dark: #1f7a58;
+  --screen: #151735;
+
+  --sky-night-1: #0d0f2e;
+  --sky-night-2: #1b1a4a;
+  --sky-night-3: #2c2a68;
+  --sky-dawn-1: #33306e;
+  --sky-dawn-2: #c06d9e;
+  --sky-dawn-3: #ffb48a;
+  --sky-day-1: #5fa8f5;
+  --sky-day-2: #9fd0ff;
+  --sky-day-3: #dff1ff;
+  --sky-golden-1: #f08a4b;
+  --sky-golden-2: #ffb85c;
+  --sky-golden-3: #ffe39a;
+  --sky-dusk-1: #2a2668;
+  --sky-dusk-2: #8a4aa6;
+  --sky-dusk-3: #ff7f7a;
+
+  --star: #fff6dc;
+  --moon: #f4efe1;
+  --moon-shade: #d8d0bd;
+  --cloud-far: #eeeaff;
+  --cloud-mid: #f7f5ff;
+  --cloud-near: #ffffff;
+  --city-far: #8f98d4;
+  --city-near: #6d76b6;
+  --city-far-night: #252659;
+  --city-near-night: #191a43;
+  --window-unlit: rgb(31 27 61 / 0.28);
+  --window-warm: #ffd98a;
+  --window-cool: #bfe3ff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-bricolage);
+  --font-mono: var(--font-jetbrains);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--ink);
+  color: var(--paper);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scene                                                               */
+/* ------------------------------------------------------------------ */
+.scene-track {
+  position: relative;
+}
+
+.scene-stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--sky-night-1);
+}
+
+.scene-shake {
+  position: absolute;
+  inset: 0;
+}
+
+/* The 1600x900 design canvas, scaled by --s (see src/scene/viewport.ts). */
+.scene-canvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(1600px * var(--s, 1));
+  height: calc(900px * var(--s, 1));
+  margin-left: calc(-800px * var(--s, 1));
+  margin-top: calc(-450px * var(--s, 1));
+  pointer-events: none;
+}
+
+.scene-canvas > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Sky fills bleed far past the canvas; the window band is ~30-51%. */
+.sky-fill {
+  position: absolute;
+  inset: -60% -50%;
+  will-change: opacity;
+}
+.sky-night {
+  background: linear-gradient(var(--sky-night-1) 28%, var(--sky-night-2) 42%, var(--sky-night-3) 52%);
+}
+.sky-dawn {
+  background: linear-gradient(var(--sky-dawn-1) 28%, var(--sky-dawn-2) 42%, var(--sky-dawn-3) 52%);
+}
+.sky-day {
+  background: linear-gradient(var(--sky-day-1) 28%, var(--sky-day-2) 42%, var(--sky-day-3) 52%);
+}
+.sky-golden {
+  background: linear-gradient(var(--sky-golden-1) 28%, var(--sky-golden-2) 42%, var(--sky-golden-3) 52%);
+}
+.sky-dusk {
+  background: linear-gradient(var(--sky-dusk-1) 28%, var(--sky-dusk-2) 42%, var(--sky-dusk-3) 52%);
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.25;
+  }
+}
+.star-twinkle {
+  animation: twinkle 2.6s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+/* ------------------------------------------------------------------ */
+/* HUD                                                                 */
+/* ------------------------------------------------------------------ */
+.hud {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  left: 14px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 16px 8px 16px;
+  border-radius: 16px;
+  background: rgb(31 27 61 / 0.86);
+  color: var(--paper);
+  pointer-events: none;
+}
+
+.hud-clock {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 5.6ch;
+  margin: 0;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-period {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.hud-counters {
+  display: flex;
+  gap: 14px;
+  margin: 0;
+}
+
+.hud-counter dt {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.hud-counter dd {
+  display: inline-block;
+  margin: 0;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-icon {
+  width: 12px;
+  height: 16px;
+}
+
+/* Placeholder stop labels (timing check). */
+.stop-labels {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.stop-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12%;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  margin: 0 auto;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 15px;
+}
+
+.stop-label span {
+  margin-right: 10px;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-twinkle {
+    animation: none;
+  }
 }
