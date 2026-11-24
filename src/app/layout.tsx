@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, JetBrains_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
@@ -14,9 +14,33 @@ const mono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const description =
+  "Scroll through one developer's day, from the 5:59 AM alarm to a 3 AM deploy. A flat-vector parallax story built with Next.js, GSAP and Lenis.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://parallax-three-chi.vercel.app"),
   title: "24 Hours of a Dev",
-  description: "A scroll-driven parallax day in the life of a developer.",
+  description,
+  applicationName: "24 Hours of a Dev",
+  authors: [{ name: "jinnaramuttej", url: "https://github.com/jinnaramuttej" }],
+  keywords: ["parallax", "scroll animation", "GSAP", "ScrollTrigger", "Lenis", "Next.js", "SVG"],
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "24 Hours of a Dev",
+    title: "24 Hours of a Dev",
+    description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "24 Hours of a Dev",
+    description,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1f1b3d",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
