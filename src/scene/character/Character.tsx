@@ -76,6 +76,15 @@ export function Character() {
         <g data-el="character">
           <g data-j="posX" transform={`translate(${p.x} 0)`}>
             <g data-j="posY" transform={`translate(0 ${p.y})`}>
+              <rect
+                data-hit="guy"
+                x="-80"
+                y="-210"
+                width="170"
+                height="360"
+                fill="transparent"
+                style={{ pointerEvents: "all" }}
+              />
               <g data-j="face" transform="scale(1 1)">
                 <g data-j="body" transform={`rotate(${p.body})`}>
                   <Limb

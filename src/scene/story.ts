@@ -54,7 +54,13 @@ export const SHOTS: Shot[] = [
   { fx: 280, fy: 580, zoom: 1.12, rot: -0.8, depth: 1 },
   { fx: 520, fy: 520, zoom: 1.04, rot: 0, depth: 1.1 },
   { fx: 790, fy: 520, zoom: 1.16, rot: 0, depth: 0.6 },
-  { fx: 760, fy: 500, zoom: 1.06, rot: 1.2, depth: 1.4 },
+  { fx: 700, fy: 500, zoom: 1.06, rot: 1.2, depth: 1.4 },
   { fx: 1280, fy: 560, zoom: 1.12, rot: -0.8, depth: 1.2 },
   { fx: 800, fy: 470, zoom: 1, rot: 0, depth: 1.5 },
 ];
+
+/** Story unit at which the deploy goes green (confetti fires here). */
+export const DEPLOY_SUCCESS_AT = s5.holdStart + 0.62;
+
+/** Story units during which the fridge door is held open by the story. */
+export const FRIDGE_OPEN: [number, number] = [s4.holdStart - 0.2, t4.start + 0.2];

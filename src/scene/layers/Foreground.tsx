@@ -34,7 +34,13 @@ export function ForegroundMug() {
           <span key={i} className="puff" data-puff={i} />
         ))}
       </div>
-      <div className="fg-mug" data-hit="mug" style={box(60, 770, 250, 220)}>
+      <button
+        type="button"
+        className="fg-mug hotspot"
+        data-hotspot="mug"
+        aria-label="Stir the coffee"
+        style={box(60, 770, 250, 220)}
+      >
         <svg
           viewBox="60 770 250 220"
           className="h-full w-full overflow-visible"
@@ -66,7 +72,7 @@ export function ForegroundMug() {
             <ellipse cx="168" cy="802" rx="76" ry="9" fill="var(--wood)" />
           </g>
         </svg>
-      </div>
+      </button>
     </ParallaxLayer>
   );
 }

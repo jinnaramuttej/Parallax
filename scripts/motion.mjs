@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 const step = Number(process.argv[process.argv.indexOf("--step") + 1] || 0.5);
 const b = await chromium.launch({ channel: "chrome" });
 const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
-await p.goto(process.env.URL ?? "http://localhost:3003", { waitUntil: "networkidle" });
+await p.goto(process.env.URL ?? "http://localhost:3002", { waitUntil: "networkidle" });
 await p.waitForTimeout(1000);
 const samples = [];
 for (let pct = 0; pct <= 100.001; pct += step) {

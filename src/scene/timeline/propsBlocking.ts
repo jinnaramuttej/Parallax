@@ -50,14 +50,15 @@ export function addPropsBlocking({ tl, q }: BuildContext) {
   screen("success", s5.holdStart + 0.62, true, 0.05);
 
   // Code scrolls while he types (scrubbed, so it scrolls with the page).
-  const scroll = el("code-scroll-0") as SVGGElement | undefined;
-  const block = Number(scroll?.dataset.block ?? 0);
-  tl.fromTo(
-    scroll ?? {},
-    { attr: { transform: "translate(0 0)" } },
-    { attr: { transform: `translate(0 ${-block})` }, duration: s3.holdStart - s2.holdStart },
-    s2.holdStart - 0.3,
-  );
+  q('[data-el^="code-scroll-"]').forEach((scroll) => {
+    const block = Number((scroll as SVGGElement).dataset.block ?? 0);
+    tl.fromTo(
+      scroll,
+      { attr: { transform: "translate(0 0)" } },
+      { attr: { transform: `translate(0 ${-block})` }, duration: s3.holdStart - s2.holdStart },
+      s2.holdStart - 0.3,
+    );
+  });
 
   // Fridge run: door swings open on its right hinge, closes on the way back.
   const door = el("fridge-door");

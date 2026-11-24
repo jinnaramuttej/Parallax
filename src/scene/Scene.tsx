@@ -22,6 +22,8 @@ import { buildMasterTimeline } from "./timeline/master";
 import { STOPS, TOTAL, UNIT_VH } from "./timing";
 import { Hud } from "./ui/Hud";
 import { CopyLayer } from "./ui/Copy";
+import { setupInteractions } from "./interactions";
+import { Hotspots } from "./ui/Hotspots";
 import { measureViewport } from "./viewport";
 
 export function Scene() {
@@ -52,7 +54,10 @@ export function Scene() {
       stage,
     );
 
+    const stopInteractions = setupInteractions(stage);
+
     return () => {
+      stopInteractions();
       mm.revert();
       ScrollTrigger.removeEventListener("refreshInit", onRefreshInit);
     };
@@ -85,6 +90,7 @@ export function Scene() {
           <ForegroundCable />
           <ForegroundMug />
           <ForegroundLeaves />
+          <Hotspots />
         </div>
         <CopyLayer />
       </div>

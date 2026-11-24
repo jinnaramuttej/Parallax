@@ -17,7 +17,7 @@ const args = Object.fromEntries(
   }, []),
 );
 
-const url = args.url ?? process.env.URL ?? "http://localhost:3003";
+const url = args.url ?? process.env.URL ?? "http://localhost:3002";
 const mode = args.mode ?? "stops";
 const step = Number(args.step ?? 5);
 const viewports = {
@@ -39,11 +39,14 @@ const context = await browser.newContext({
 });
 const page = await context.newPage();
 const errors = [];
+let collecting = true;
+const log = (msg) => collecting && errors.push(msg);
 page.on("console", (m) => {
-  if (m.type() === "error" || m.type() === "warning") errors.push(`[${m.type()}] ${m.text()}`);
+  if (m.type() === "error" || m.type() === "warning") log(`[${m.type()}] ${m.text()} @ ${m.location().url}`);
 });
-page.on("pageerror", (e) => errors.push(`[pageerror] ${e.message}`));
-page.on("requestfailed", (r) => errors.push(`[requestfailed] ${r.url()}`));
+page.on("pageerror", (e) => log(`[pageerror] ${e.message}`));
+page.on("requestfailed", (r) => log(`[requestfailed] ${r.url()}`));
+page.on("response", (r) => r.status() >= 400 && log(`[${r.status()}] ${r.url()}`));
 
 await page.goto(url, { waitUntil: "networkidle" });
 await page.waitForSelector("[data-scene-stage]");
@@ -85,6 +88,7 @@ for (const t of targets) {
 }
 
 // Contact sheet: all shots in a grid, labelled.
+collecting = false;
 const cols = vpName === "mobile" ? 6 : mode === "stops" ? 3 : 4;
 const thumbW = vpName === "mobile" ? 260 : 480;
 const imgs = await Promise.all(shots.map(async (s) => (await readFile(s.file)).toString("base64")));
