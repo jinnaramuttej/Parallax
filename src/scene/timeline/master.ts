@@ -6,6 +6,7 @@ import { createWorld } from "./world";
 import { addStopLabels } from "./stopLabels";
 import { addCameraMoves } from "./cameraMoves";
 import { addCharacterBlocking } from "./blocking";
+import { addPropsBlocking } from "./propsBlocking";
 
 export type BuildContext = {
   tl: gsap.core.Timeline;
@@ -57,6 +58,7 @@ export function buildMasterTimeline({
   };
   addCameraMoves(ctx, camera.cam);
   addCharacterBlocking(ctx);
+  addPropsBlocking(ctx);
   addStopLabels(ctx);
 
   // Pad to exactly TOTAL units so progress maps 1:1 to story time.

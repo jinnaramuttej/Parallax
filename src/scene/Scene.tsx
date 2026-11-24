@@ -4,6 +4,15 @@ import { useLayoutEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { Character } from "./character/Character";
 import { Celestial } from "./layers/Celestial";
+import {
+  ForegroundCable,
+  ForegroundLeaves,
+  ForegroundMug,
+} from "./layers/Foreground";
+import { Glows } from "./layers/Glows";
+import { MonitorScreen } from "./layers/MonitorScreen";
+import { Tints } from "./layers/Tints";
+import { Props } from "./props/Props";
 import { Room } from "./room/Room";
 import { Clouds } from "./layers/Clouds";
 import { Sky } from "./layers/Sky";
@@ -68,7 +77,14 @@ export function Scene() {
           <Clouds />
           <Skyline />
           <Room />
+          <MonitorScreen />
           <Character />
+          <Props />
+          <Tints />
+          <Glows />
+          <ForegroundCable />
+          <ForegroundMug />
+          <ForegroundLeaves />
         </div>
         <StopLabels />
       </div>

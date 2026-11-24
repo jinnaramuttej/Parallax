@@ -17,7 +17,7 @@ const args = Object.fromEntries(
   }, []),
 );
 
-const url = args.url ?? "http://localhost:3002";
+const url = args.url ?? process.env.URL ?? "http://localhost:3003";
 const mode = args.mode ?? "stops";
 const step = Number(args.step ?? 5);
 const viewports = {

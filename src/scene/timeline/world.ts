@@ -56,6 +56,14 @@ const CITY_NIGHT: Key[] = [
   [1110, 0],
   [1250, 1],
 ];
+/** Room lighting, written as CSS variables that the tint/glow layers read. */
+const ROOM_LIGHT: Record<string, Key[]> = {
+  "--dawn": [[330, 0.15], [359, 0.3], [400, 0.4], [470, 0.12], [540, 0]],
+  "--night": [[340, 0.75], [380, 0.55], [440, 0.12], [520, 0], [1100, 0], [1170, 0.45], [1260, 0.8]],
+  "--golden": [[990, 0], [1045, 0.5], [1095, 0.6], [1150, 0.1], [1180, 0]],
+  "--lamp": [[1090, 0], [1130, 1]],
+  "--glow": [[1100, 0], [1220, 0.85]],
+};
 const SUNRISE = 360;
 const SUNSET = 1170;
 const MOONRISE = 1150;
@@ -101,6 +109,16 @@ export function createWorld(stage: HTMLElement) {
       o: setter(el, "opacity", `cloudO-${band.key}`),
     };
   });
+  const lightHosts = [q('[data-el="tints"]')[0], q('[data-el="glows"]')[0]].filter(
+    Boolean,
+  ) as HTMLElement[];
+  function setVar(name: string, value: number) {
+    const rounded = Math.round(value * 1000) / 1000;
+    if (cache.get(name) === rounded) return;
+    cache.set(name, rounded);
+    for (const host of lightHosts) host.style.setProperty(name, String(rounded));
+  }
+
   const cityNight = ["far", "near"].map((k) =>
     setter(q(`[data-el="city-night-${k}"]`)[0], "opacity", `city-${k}`),
   );
@@ -155,6 +173,8 @@ export function createWorld(stage: HTMLElement) {
       c.x((-elapsed * c.drift * 100) / CLOUD_STRIP.w);
       c.o(cloudO);
     }
+
+    for (const [name, keys] of Object.entries(ROOM_LIGHT)) setVar(name, curve(keys, t));
 
     const night = curve(CITY_NIGHT, t);
     cityNight.forEach((set) => set(night));

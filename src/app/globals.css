@@ -28,6 +28,12 @@
   --screen: #151735;
   --fridge-inside: #fff1cc;
   --fridge-light: #eaf6ff;
+  --tint-dawn: #ffb0c4;
+  --tint-golden: #ff9f4f;
+  --tint-night: #343a8a;
+  --tint-error: #ff4d5e;
+  --lamp-glow: rgb(255 209 102 / 0.8);
+  --screen-glow: rgb(150 200 255 / 0.55);
 
   --sky-night-1: #0d0f2e;
   --sky-night-2: #1b1a4a;
@@ -152,6 +158,167 @@ body {
   will-change: opacity;
 }
 
+/* Room lighting: opacity only, read from CSS variables set by the world. */
+.tint,
+.golden-beam,
+.glow,
+.glow-spill {
+  position: absolute;
+  pointer-events: none;
+  will-change: opacity;
+}
+.tint {
+  inset: 0;
+  mix-blend-mode: multiply;
+}
+.tint > svg,
+.golden-beam > svg,
+.glow-spill > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.tint-dawn {
+  opacity: var(--dawn, 0);
+}
+.tint-golden {
+  opacity: var(--golden, 0);
+}
+.tint-night {
+  opacity: var(--night, 0);
+}
+.tint-error {
+  opacity: 0;
+}
+.golden-beam {
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+.glow,
+.glow-spill {
+  mix-blend-mode: screen;
+}
+.glow-lamp {
+  background: radial-gradient(closest-side at 48% 42%, var(--lamp-glow), transparent);
+  opacity: var(--lamp, 0);
+}
+.glow-screen {
+  background: radial-gradient(closest-side at 50% 46%, var(--screen-glow), transparent);
+  opacity: var(--glow, 0);
+}
+.glow-spill {
+  opacity: 0;
+}
+
+/* Floating Zs (compositor-only animation). */
+.zzz {
+  position: absolute;
+  will-change: opacity;
+}
+.zzz span {
+  position: absolute;
+  font-family: var(--font-jetbrains), monospace;
+  font-weight: 800;
+  color: var(--paper);
+  animation: zfloat 2.4s ease-in-out infinite;
+}
+.zzz-1 {
+  left: 18%;
+  top: 62%;
+  font-size: calc(22px * var(--s, 1));
+}
+.zzz-2 {
+  left: 36%;
+  top: 38%;
+  font-size: calc(28px * var(--s, 1));
+  animation-delay: 0.4s !important;
+}
+.zzz-3 {
+  left: 56%;
+  top: 10%;
+  font-size: calc(34px * var(--s, 1));
+  animation-delay: 0.8s !important;
+}
+@keyframes zfloat {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.95;
+  }
+  50% {
+    transform: translateY(-25%);
+    opacity: 0.45;
+  }
+}
+
+/* Foreground mug: steam wisps, heart, burst puffs. */
+.fg-steam,
+.fg-heart,
+.fg-burst,
+.fg-mug {
+  position: absolute;
+}
+.fg-heart,
+.fg-steam {
+  will-change: transform, opacity;
+}
+.fg-heart {
+  opacity: 0;
+}
+.fg-heart > svg,
+.fg-mug > svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.wisp {
+  position: absolute;
+  bottom: 0;
+  width: 30%;
+  height: 55%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 248 236 / 0.6), transparent);
+  animation: rise 3.6s ease-in infinite;
+  will-change: transform, opacity;
+}
+.wisp-1 {
+  left: 18%;
+}
+.wisp-2 {
+  left: 40%;
+  animation-delay: 1.2s;
+}
+.wisp-3 {
+  left: 58%;
+  animation-delay: 2.4s;
+}
+@keyframes rise {
+  0% {
+    transform: translateY(25%) scale(0.6);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-70%) scale(1.35);
+    opacity: 0;
+  }
+}
+.puff {
+  position: absolute;
+  left: 38%;
+  top: 62%;
+  width: 26%;
+  height: 20%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 248 236 / 0.85), transparent);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
 /* ------------------------------------------------------------------ */
 /* HUD                                                                 */
 /* ------------------------------------------------------------------ */
@@ -247,7 +414,12 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .star-twinkle {
+  .star-twinkle,
+  .zzz span,
+  .wisp {
     animation: none;
+  }
+  .wisp {
+    opacity: 0.5;
   }
 }
