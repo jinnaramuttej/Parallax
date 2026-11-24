@@ -7,11 +7,12 @@ import { stop1 } from "./stop1";
 import { stop2 } from "./stop2";
 import { stop3 } from "./stop3";
 import { stop4 } from "./stop4";
+import { stop5 } from "./stop5";
 
 type StopBuilder = (ctx: StopContext) => void;
 
 /** Choreographed stops. Each one owns its arrival, copy, light and surprise. */
-const CHOREOGRAPHED: StopBuilder[] = [stop0, stop1, stop2, stop3, stop4];
+const CHOREOGRAPHED: StopBuilder[] = [stop0, stop1, stop2, stop3, stop4, stop5];
 
 /** Until a stop is choreographed, the camera still follows the guy there. */
 function fallbackCamera(ctx: StopContext) {
