@@ -41,9 +41,18 @@ Flat-vector inline SVG art. Layers, back to front: sky, skyline, room, foregroun
 - Scene art uses a 1600×900 design canvas. `.scene-canvas` sizes it from `--s` (set in `src/scene/viewport.ts`), and children use `box(x, y, w, h)` in canvas units.
 - `<ParallaxLayer speed>`: inside the stage, speed scales the camera (pan, zoom, tilt) applied to that layer (0 = fixed sky, 1 = room plane, >1 = foreground). Outside the stage, it is a normal scroll-speed parallax layer.
 
+- Per-stop choreography lives in `src/scene/timeline/stops/stopN.ts`; copy, counter events and camera shots per stop are in `src/scene/story.ts`.
+- SVG joints and props are tweened through their `transform` attribute (`rotate()`/`translate()` strings), not GSAP `svgOrigin` (that is in global SVG coordinates).
+
+## Gotchas
+
+- Dev server: edits to `globals.css` are sometimes not hot-reloaded (stale stylesheet, no error). Restart the dev server after CSS changes before judging screenshots.
+- The ports for `next dev` move around (3000 is taken on this machine); scripts read `URL`.
+
 ## Commands
 
 - `npm run dev` / `npm run build` / `npm run lint`
 - Dev server for the preview pane: `.claude/launch.json` (`next-dev`)
+- Checks (Playwright on the installed Chrome): `node scripts/shoot.mjs --mode stops|percent [--viewport mobile] [--reduce]`, `scripts/audit-layout.mjs`, `scripts/motion.mjs`, `scripts/perf.mjs [--dpr 2]`, `scripts/sync.mjs`, `scripts/net.mjs`. `bash scripts/serve-prod.sh` serves a production build on :3100 for perf runs.
 - Deploy: `npx vercel deploy --prod` (folder is linked to Vercel project `parallax`; no Git integration yet)
 - Live: https://parallax-three-chi.vercel.app
