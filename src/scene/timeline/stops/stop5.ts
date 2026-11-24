@@ -14,12 +14,11 @@ export function stop5({ tl, cam, copy, el }: StopContext) {
   const s = STOPS[5];
   const t4 = transition(4);
 
-  // Follow him back across the room first (on narrow screens the camera
-  // would otherwise lag and lose him), then settle on a shot that fits him
-  // and the monitor. Zoom, tilt and depth ease over the whole transition.
+  // Pan with him as he walks back (a slower pan lags behind and loses him
+  // on narrow screens), landing on a shot that fits him and the monitor.
+  // Zoom, tilt and depth ease over the whole transition.
   const { fx, fy, ...lens } = SHOTS[5];
-  tl.to(cam, { fx: 680, fy: 520, duration: 1.0, ease: "sine.inOut" }, t4.start);
-  tl.to(cam, { fx, fy, duration: 1.1, ease: "sine.inOut" }, t4.start + 1.0);
+  tl.to(cam, { fx, fy, duration: 1.4, ease: "sine.inOut" }, t4.start - 0.25);
   tl.to(cam, { ...lens, duration: t4.end - t4.start + 0.4, ease: "sine.inOut" }, t4.start - 0.25);
   drift(tl, cam, t4.end, s.holdEnd - t4.end, -8, 4);
 
