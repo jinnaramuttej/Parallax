@@ -28,3 +28,5 @@ Layers (back to front): sky, skyline, room, foreground. Each moves at its own sp
 
 - `npm run dev` / `npm run build` / `npm run lint`
 - Dev server for the preview pane: `.claude/launch.json` (`next-dev`)
+- Deploy: `npx vercel deploy --prod` (folder is linked to Vercel project `parallax`; no Git integration yet)
+- Live: https://parallax-three-chi.vercel.app
