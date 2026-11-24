@@ -373,6 +373,7 @@ body {
   /* The clock text changes every story minute: keep that reflow inside the
      HUD (fixed box + strict containment) instead of the whole document. */
   contain: strict;
+  will-change: transform;
 }
 
 .hud-clock {
@@ -433,6 +434,8 @@ body {
 
 .copy {
   position: absolute;
+  /* Own compositor layer: SplitText char moves repaint only this note. */
+  will-change: transform;
   top: clamp(92px, 12vh, 130px);
   width: min(30vw, 420px);
 }
@@ -608,6 +611,7 @@ body {
   padding: 4px;
   border-radius: 99px;
   background: rgb(31 27 61 / 0.86);
+  will-change: transform;
 }
 .scrubber-stop {
   display: flex;
