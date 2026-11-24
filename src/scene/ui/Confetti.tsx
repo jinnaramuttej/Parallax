@@ -36,14 +36,27 @@ export function Confetti() {
     let raf = 0;
     let last = 0;
 
-    const fire = () => {
-      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Size the canvas and read the palette ahead of time (on mount and
+    // resize), so firing at 3 AM doesn't stall a frame.
+    let colors: string[] = [];
+    const size = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = innerWidth * dpr;
       canvas.height = innerHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const styles = getComputedStyle(document.documentElement);
-      const colors = COLORS.map((c) => styles.getPropertyValue(c).trim());
+      colors = COLORS.map((c) => styles.getPropertyValue(c).trim());
+    };
+    size();
+    let resizeTimer = 0;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(size, 200);
+    };
+    window.addEventListener("resize", onResize);
+
+    const fire = () => {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const origin = document.querySelector('[data-hotspot="monitor"]')?.getBoundingClientRect();
       const ox = origin ? origin.left + origin.width / 2 : innerWidth / 2;
       const oy = origin ? origin.top + origin.height / 2 : innerHeight / 2;
@@ -96,6 +109,8 @@ export function Confetti() {
     return () => {
       off();
       cancelAnimationFrame(raf);
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
