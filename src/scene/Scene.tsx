@@ -23,6 +23,7 @@ import { STOPS, TOTAL, UNIT_VH } from "./timing";
 import { Hud } from "./ui/Hud";
 import { CopyLayer } from "./ui/Copy";
 import { setupInteractions } from "./interactions";
+import { Confetti } from "./ui/Confetti";
 import { Hotspots } from "./ui/Hotspots";
 import { measureViewport } from "./viewport";
 
@@ -95,6 +96,7 @@ export function Scene() {
         <CopyLayer />
       </div>
       <Hud />
+      <Confetti />
     </section>
   );
 }
