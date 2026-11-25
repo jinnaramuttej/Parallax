@@ -57,14 +57,18 @@ shoulder, confetti, stats finale). Boot, break, multitask and bug get at least 1
 - The cat: `src/scene/character/Cat.tsx` + `catPoses.ts`, driven by `src/scene/timeline/catRig.ts` (catPose, catWalk, catJump; tail/ear idle loops on real time).
 - Captions: `src/components/ComicCaption.tsx` (layers), `src/scene/timeline/captions.ts` (scrubbed entrances, placement clear of `[data-face]`, `[data-screen-rect]` and HUD, `showBalloon(id)`, D = debug zones).
 - Audio: `src/audio/` (AudioManager singleton, synth effects and lo-fi loop, director syncing voice lines and cues to the day, SoundButton). Sound is off until a gesture; voice mp3s found at build time by `src/app/page.tsx`, else speech synthesis.
-- Autoplay: `src/autoplay/` (director drives Lenis `scrollTo` from a GSAP tween, stops at voice lines; Intro card, HUD transport). `src/scene/navigate.ts` holds scroll helpers.
+- Autoplay: `src/autoplay/` (each segment is a Lenis `scrollTo` animation, the same path as a wheel scroll; it holds at voice lines; Intro card, HUD transport). `src/scene/navigate.ts` holds scroll helpers.
 - Moving pieces that change every frame live in their own small layers (wall clock hands in `RoomLife`, curtain flares in `Curtains`) so the big room SVG never repaints.
+- Per-frame writes stay cheap: the camera writes one transform string per layer, room light sets opacity on its few elements (no CSS variables on layers), and caption placement reads the DOM only a few times a second. Profile with `node scripts/perf.mjs --autoplay 60 --profile` on the production build.
 
 ## Gotchas
 
 - Dev server: edits to `globals.css` are sometimes not hot-reloaded (stale stylesheet, no error). Restart the dev server after CSS changes before judging screenshots; if new rules are still missing, delete `.next` (Turbopack's persistent cache) and restart.
 - `getBoundingClientRect` ignores clip paths: measure `[data-screen-rect]` for a screen and `[data-face]` for his face, not the groups.
 - `gsap.quickSetter(el, "rotation")` needs the `"deg"` unit or it writes invalid CSS silently.
+- The canvas scale `--s` is set by an inline `<head>` script (`SCALE_SCRIPT` in `src/scene/viewport.ts`) before first paint, and `html` keeps a stable scrollbar gutter (a stopped Lenis uses `overflow: hidden`, not `clip`): keep these, or load CLS comes back.
+- Driving the scroll with `lenis.scrollTo(y, { immediate: true })` every frame interleaves scroll reads and DOM writes (forced layouts); animate with Lenis instead.
+- Headed perf runs on Windows: an occluded window gets throttled frames; `perf.mjs` passes Chrome flags against that, but close other pages showing the scene while measuring.
 - Scripts read `URL` (the dev server runs on :3000).
 
 ## Commands
