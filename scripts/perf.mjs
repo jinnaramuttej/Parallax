@@ -2,15 +2,21 @@
 // (through Lenis, like a user). Headed Chrome so the GPU is real.
 // Reports FPS, frame-time percentiles, long tasks, layout shifts, and which
 // DOM nodes repaint most (from the DevTools timeline trace).
-//   node scripts/perf.mjs [--dpr 2] [--out shots/perf-before.json]
+//   node scripts/perf.mjs [--dpr 2] [--out shots/perf-before.json] [--autoplay 60] [--profile]
+// --profile adds the CPU sampler (self time and callers) but slows frames down.
 import { chromium } from "playwright";
 import { writeFile } from "node:fs/promises";
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > -1 ? process.argv[i + 1] : d; };
 const dpr = Number(arg("--dpr", 1));
-const b = await chromium.launch({ channel: "chrome", headless: false, args: ["--window-size=1460,1000"] });
+const b = await chromium.launch({
+  channel: "chrome",
+  headless: false,
+  // Keep frames coming even if the window is behind others (Windows throttles occluded windows).
+  args: ["--window-size=1460,1000", "--disable-backgrounding-occluded-windows", "--disable-renderer-backgrounding", "--disable-background-timer-throttling"],
+});
 const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: dpr });
 const p = await ctx.newPage();
-await p.goto(process.env.URL ?? "http://localhost:3002", { waitUntil: "networkidle" });
+await p.goto(process.env.URL ?? "http://localhost:3100", { waitUntil: "networkidle" });
 await p.waitForFunction(() => document.querySelector("[data-loader][data-done]"), null, { timeout: 20000 });
 await p.waitForTimeout(500);
 await p.evaluate(() => {
@@ -27,13 +33,20 @@ await cdp.send("DOM.getDocument", { depth: -1 });
 const events = [];
 cdp.on("Tracing.dataCollected", (d) => events.push(...d.value));
 const done = new Promise((r) => cdp.once("Tracing.tracingComplete", r));
-await cdp.send("Tracing.start", { categories: "devtools.timeline,disabled-by-default-devtools.timeline,disabled-by-default-devtools.timeline.frame,disabled-by-default-devtools.timeline.stack,disabled-by-default-devtools.timeline.invalidationTracking,blink.user_timing", transferMode: "ReportEvents" });
-await p.mouse.move(720, 450);
-const total = await p.evaluate(() => document.querySelector(".scene-track").offsetHeight - innerHeight);
-const t0 = Date.now();
-while ((await p.evaluate(() => scrollY)) < total - 50 && Date.now() - t0 < 60000) {
-  await p.mouse.wheel(0, 100);
-  await p.waitForTimeout(16);
+await cdp.send("Tracing.start", { categories: `devtools.timeline,disabled-by-default-devtools.timeline,disabled-by-default-devtools.timeline.frame,disabled-by-default-devtools.timeline.stack,disabled-by-default-devtools.timeline.invalidationTracking,blink.user_timing${process.argv.includes("--profile") ? ",disabled-by-default-v8.cpu_profiler" : ""}`, transferMode: "ReportEvents" });
+const autoplaySeconds = Number(arg("--autoplay", 0));
+if (autoplaySeconds) {
+  // Autoplay: press "Play the day" and record for that many seconds.
+  await p.click(".intro-play");
+  await p.waitForTimeout(autoplaySeconds * 1000);
+} else {
+  await p.mouse.move(720, 450);
+  const total = await p.evaluate(() => document.querySelector(".scene-track").offsetHeight - innerHeight);
+  const t0 = Date.now();
+  while ((await p.evaluate(() => scrollY)) < total - 50 && Date.now() - t0 < 60000) {
+    await p.mouse.wheel(0, 100);
+    await p.waitForTimeout(16);
+  }
 }
 await p.waitForTimeout(800);
 await cdp.send("Tracing.end");
@@ -85,6 +98,50 @@ for (const e of events) {
   const key = `${e.name} ${f ? `${f.functionName || "(anon)"} ${String(f.url).split("/").pop()}:${f.lineNumber}` : ""}`;
   invalidations[key] = (invalidations[key] ?? 0) + 1;
 }
+// CPU profile: self time per function (from the sampling profiler).
+const selfTime = {};
+const nodes = new Map();
+for (const e of events) {
+  if (e.name !== "ProfileChunk") continue;
+  const prof = e.args?.data?.cpuProfile;
+  if (!prof) continue;
+  for (const n of prof.nodes ?? []) nodes.set(n.id, n.callFrame);
+  const deltas = e.args.data.timeDeltas ?? [];
+  (prof.samples ?? []).forEach((id, i) => {
+    const cf = nodes.get(id);
+    if (!cf) return;
+    const key = `${cf.functionName || "(anon)"} ${String(cf.url || "").split("/").pop()}:${cf.lineNumber}:${cf.columnNumber}`;
+    selfTime[key] = (selfTime[key] ?? 0) + (deltas[i] ?? 0) / 1000;
+  });
+}
+// Who calls the hottest native functions (caller frame, by sampled time).
+const parents = new Map();
+for (const e of events) {
+  if (e.name !== "ProfileChunk") continue;
+  for (const n of e.args?.data?.cpuProfile?.nodes ?? []) if (n.parent) parents.set(n.id, n.parent);
+}
+const callers = {};
+for (const e of events) {
+  if (e.name !== "ProfileChunk") continue;
+  const prof = e.args?.data?.cpuProfile;
+  const deltas = e.args?.data?.timeDeltas ?? [];
+  (prof?.samples ?? []).forEach((id, i) => {
+    const cf = nodes.get(id);
+    if (!cf || !["getBoundingClientRect", "scrollTo", "setAttribute"].includes(cf.functionName)) return;
+    // Walk up to the first frame with a script URL.
+    let up = parents.get(id);
+    let chain = [];
+    while (up && chain.length < 3) {
+      const pf = nodes.get(up);
+      if (pf?.url) chain.push(`${pf.functionName || "(anon)"}:${String(pf.url).split("/").pop()}:${pf.columnNumber}`);
+      up = parents.get(up);
+    }
+    const key = `${cf.functionName} <- ${chain.join(" <- ")}`;
+    callers[key] = (callers[key] ?? 0) + (deltas[i] ?? 0) / 1000;
+  });
+}
+const topCallers = Object.entries(callers).sort((a, c) => c[1] - a[1]).slice(0, 12).map(([k, ms]) => `${ms.toFixed(0)}ms ${k}`);
+const topSelf = Object.entries(selfTime).sort((a, c) => c[1] - a[1]).slice(0, 25).map(([k, ms]) => `${ms.toFixed(0)}ms ${k}`);
 const report = {
   dpr,
   frames: frames.length,
@@ -112,6 +169,8 @@ const report = {
   layoutRoots: layoutTop,
   styleRecalcsOver200Elements: bigRecalcs,
   maxRecalcElements: Math.max(0, ...recalcs.map((e) => e.args.elementCount)),
+  topSelfTime: topSelf,
+  topCallers,
   topInvalidations: Object.entries(invalidations).sort((a, c) => c[1] - a[1]).slice(0, 8).map(([k, n]) => `${n}x ${k}`),
 };
 console.log(JSON.stringify(report, null, 1));

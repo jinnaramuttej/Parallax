@@ -4,11 +4,11 @@
 import { chromium } from "playwright";
 const b = await chromium.launch({ channel: "chrome" });
 const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
-await p.goto(process.env.URL ?? "http://localhost:3002", { waitUntil: "networkidle" });
+await p.goto(process.env.URL ?? "http://localhost:3000", { waitUntil: "networkidle" });
 await p.waitForFunction(() => document.querySelector("[data-loader][data-done]"), null, { timeout: 20000 });
 await p.evaluate(() => {
   window.__rec = [];
-  const room = document.querySelector('[data-parallax-speed="1"]');
+  const room = document.querySelector("[data-camera]");
   const loop = () => {
     window.__rec.push([scrollY, document.querySelector(".hud-clock").textContent, room.style.transform]);
     if (window.__rec.length < 4000) requestAnimationFrame(loop);
