@@ -175,11 +175,21 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
       counter *= room / size.w;
       size = screenSize(n, counter, f);
     }
-    const choice = pick(
-      cap.id,
-      zoneList(cap).map((z) => ({ zone: z, cx: sr.left + ZONES[z][0] * sr.width, cy: sr.top + ZONES[z][1] * sr.height })),
-      size,
-    );
+    const zones = zoneList(cap).map((z) => ({ zone: z, cx: sr.left + ZONES[z][0] * sr.width, cy: sr.top + ZONES[z][1] * sr.height }));
+    let choice = pick(cap.id, zones, size);
+    // Crowded frame (small screens, wide shots): try it a little smaller
+    // before letting it overlap anything.
+    const base = counter;
+    for (const k of [0.85, 0.72]) {
+      if (choice.score === 0) break;
+      const smaller = screenSize(n, base * k, f);
+      const alt = pick(cap.id, zones, smaller);
+      if (alt.score < choice.score) {
+        choice = alt;
+        counter = base * k;
+        size = smaller;
+      }
+    }
     setCentre(n, choice.rect.x + size.w / 2, choice.rect.y + size.h / 2, counter, glide, f);
     placed.set(cap.id, { id: cap.id, rect: choice.rect, zone: choice.zone });
     lastMove.set(cap.id, performance.now());
@@ -209,6 +219,7 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
   const balloonSide = new Map<string, string>();
 
   const lastCheck = new Map<string, number>();
+  const balloonShrink = new Map<string, number>();
   const face = () => stage.querySelector("[data-face]");
 
   function placeBalloon(n: { el: HTMLElement; layer: HTMLElement }, id: string, keepSide = false) {
@@ -216,16 +227,19 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
     if (!head) return;
     const h = head.getBoundingClientRect();
     const f = layerFrame(n.layer);
-    const counter = counterScale(f);
-    const size = screenSize(n, counter, f);
+    const base = counterScale(f);
+    let shrink = keepSide ? (balloonShrink.get(id) ?? 1) : 1;
+    let counter = base * shrink;
+    let size = screenSize(n, counter, f);
     const gap = 18;
-    const all = [
-      { zone: "above-right", cx: h.right + size.w / 2 - h.width * 0.15, cy: h.top - size.h / 2 - gap },
-      { zone: "above-left", cx: h.left - size.w / 2 + h.width * 0.15, cy: h.top - size.h / 2 - gap },
-      { zone: "right", cx: h.right + size.w / 2 + gap * 2, cy: h.top + h.height * 0.2 - size.h / 2 },
-      { zone: "left", cx: h.left - size.w / 2 - gap * 2, cy: h.top + h.height * 0.2 - size.h / 2 },
-      { zone: "above", cx: h.left + h.width / 2, cy: h.top - size.h / 2 - gap * 2 },
+    const around = (sz: { w: number; h: number }) => [
+      { zone: "above-right", cx: h.right + sz.w / 2 - h.width * 0.15, cy: h.top - sz.h / 2 - gap },
+      { zone: "above-left", cx: h.left - sz.w / 2 + h.width * 0.15, cy: h.top - sz.h / 2 - gap },
+      { zone: "right", cx: h.right + sz.w / 2 + gap * 2, cy: h.top + h.height * 0.2 - sz.h / 2 },
+      { zone: "left", cx: h.left - sz.w / 2 - gap * 2, cy: h.top + h.height * 0.2 - sz.h / 2 },
+      { zone: "above", cx: h.left + h.width / 2, cy: h.top - sz.h / 2 - gap * 2 },
     ];
+    const all = around(size);
     // Keep the side it is on while it stays clear; otherwise pick again.
     let choice: { zone: string; rect: Rect } | null = null;
     if (keepSide) {
@@ -241,7 +255,23 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
         }
       }
     }
-    choice ??= pick(id, all, size);
+    if (!choice) {
+      let best = pick(id, all, size);
+      // Crowded frame: a slightly smaller balloon before any overlap.
+      for (const k of [0.85, 0.72]) {
+        if (best.score === 0) break;
+        const sz = screenSize(n, base * k, f);
+        const alt = pick(id, around(sz), sz);
+        if (alt.score < best.score) {
+          best = alt;
+          shrink = k;
+          counter = base * k;
+          size = sz;
+        }
+      }
+      choice = best;
+    }
+    balloonShrink.set(id, shrink);
     balloonSide.set(id, choice.zone);
     const cx = choice.rect.x + size.w / 2;
     const cy = choice.rect.y + size.h / 2;
