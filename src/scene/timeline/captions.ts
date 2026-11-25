@@ -204,8 +204,8 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
   function recheck(n: { el: HTMLElement; inner: HTMLElement; layer: HTMLElement; cap?: Caption }) {
     const id = n.cap!.id;
     const t = performance.now();
-    // At most ~3 checks a second (each one reads a dozen rects).
-    if (t - (lastMove.get(id) ?? 0) < 350) return;
+    // At most ~5 checks a second (each one reads a dozen rects).
+    if (t - (lastMove.get(id) ?? 0) < 200) return;
     lastMove.set(id, t);
     const body = n.el.querySelector(".cap-body");
     if (!body) return;
@@ -220,6 +220,13 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
 
   const lastCheck = new Map<string, number>();
   const balloonShrink = new Map<string, number>();
+  const parked = new Set<string>();
+  function park(el: HTMLElement, id: string, on: boolean) {
+    if (on === parked.has(id)) return;
+    if (on) parked.add(id);
+    else parked.delete(id);
+    gsap.to(el, { opacity: on ? 0 : 1, duration: reduce ? 0.01 : 0.2, overwrite: "auto" });
+  }
   const face = () => stage.querySelector("[data-face]");
 
   function placeBalloon(n: { el: HTMLElement; layer: HTMLElement }, id: string, keepSide = false) {
@@ -246,12 +253,17 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
       const k = all.find((c) => c.zone === balloonSide.get(id));
       if (k) {
         const rect = clampRect(k.cx, k.cy, size);
-        // The full keep-out check is costly; while following, run it ~3 times a second.
+        // The full keep-out check is costly; while following, run it a few
+        // times a second. His face is checked every frame (its rect is read anyway).
         const now = performance.now();
-        if (now - (lastCheck.get(id) ?? 0) < 320) choice = { zone: k.zone, rect };
-        else {
+        const onFace = overlap(rect, pad(toRect(h), FACE_PAD)) > 0;
+        if (!onFace && now - (lastCheck.get(id) ?? 0) < 150) choice = { zone: k.zone, rect };
+        else if (!onFace) {
           lastCheck.set(id, now);
-          if (score(rect, forbidden(id)) < 600) choice = { zone: k.zone, rect };
+          if (score(rect, forbidden(id)) < 40) {
+            choice = { zone: k.zone, rect };
+            park(n.el, id, false);
+          }
         }
       }
     }
@@ -270,6 +282,9 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
         }
       }
       choice = best;
+      // Nowhere clear near him (a screen close-up, a whip pan, his head out of
+      // frame): the balloon waits out of sight until there is room again.
+      park(n.el, id, best.score > 300);
     }
     balloonShrink.set(id, shrink);
     balloonSide.set(id, choice.zone);
@@ -440,6 +455,7 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
     if (!n) return { hide: () => {} };
     if (shown && shown !== id) hideBalloonNow(shown);
     shown = id;
+    parked.delete(id);
     gsap.set(n.el, { autoAlpha: 1 });
     placeBalloon(n, id);
     gsap.fromTo(
