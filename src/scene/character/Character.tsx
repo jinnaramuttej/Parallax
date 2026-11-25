@@ -2,6 +2,7 @@ import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { Head } from "./Head";
 import { Limb } from "./Limb";
 import { MugShape } from "../props/Mug";
+import { CatRig } from "./Cat";
 import { POSES } from "./poses";
 
 function Shoe() {
@@ -161,6 +162,10 @@ export function Character() {
                       </Limb>
                     </Limb>
                     <Torso />
+                    {/* The cat across his shoulders (finale), hidden until then. */}
+                    <g data-el="shoulder-cat" opacity="0" transform="translate(-24 -100) scale(0.92)">
+                      <CatRig which="shoulder" pose="shoulder" face={-1} />
+                    </g>
                     <g transform="translate(4 -114)">
                       <g data-j="head" transform={`rotate(${p.head})`}>
                         <Head />

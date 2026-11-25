@@ -5,6 +5,7 @@ import { timeAt } from "@/config/timeMap";
 import { dayStore } from "../dayStore";
 import { ACT_BUILDERS } from "./acts";
 import { createCamera } from "./camera";
+import { createCatRig, startCatIdle, type CatRigHandle } from "./catRig";
 import { addCameraDirection } from "./cameraDirector";
 import { splitCopy } from "./copy";
 import { createRig, type Rig } from "./rig";
@@ -21,6 +22,9 @@ export type BuildContext = {
 
 export type ActContext = BuildContext & {
   rig: Rig;
+  /** The room cat and the one that ends up on his shoulder. */
+  cat: CatRigHandle;
+  shoulderCat: CatRigHandle;
   copy: ReturnType<typeof splitCopy>;
   el: (name: string) => Element;
 };
@@ -57,9 +61,14 @@ export function buildMasterTimeline({
   const actCtx: ActContext = {
     ...ctx,
     rig: createRig(q),
+    cat: createCatRig(q, "room"),
+    shoulderCat: createCatRig(q, "shoulder"),
     copy: splitCopy(ctx),
     el: (name) => q(`[data-el="${name}"]`)[0],
   };
+
+  // Tail sway and ear twitches run on real time, independent of scroll.
+  ctx.cleanup.push(startCatIdle([actCtx.cat, actCtx.shoulderCat], reduce));
 
   addCameraDirection(tl, camera.cam);
   for (const act of ACTS) ACT_BUILDERS[act.id](actCtx);

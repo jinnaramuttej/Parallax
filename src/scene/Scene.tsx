@@ -9,6 +9,7 @@ import {
   ForegroundLeaves,
   ForegroundMug,
 } from "./layers/Foreground";
+import { CatLayer } from "./layers/CatLayer";
 import { Glows } from "./layers/Glows";
 import { MonitorScreen } from "./layers/MonitorScreen";
 import { Tints } from "./layers/Tints";
@@ -117,6 +118,7 @@ export function Scene() {
             <MonitorScreen />
             <Character />
             <Props />
+            <CatLayer />
             <Tints />
             <Glows />
             <ForegroundCable />
