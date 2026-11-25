@@ -1,6 +1,7 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { Head } from "./Head";
 import { Limb } from "./Limb";
+import { MugShape } from "../props/Mug";
 import { POSES } from "./poses";
 
 function Shoe() {
@@ -9,6 +10,20 @@ function Shoe() {
 
 function Hand({ color }: { color: string }) {
   return <circle cx="0" cy="56" r="10" fill={color} />;
+}
+
+/**
+ * The coffee mug in his near hand, gripped by the handle. The inner group's
+ * rotation is counter-tweened against the arm so the mug stays upright.
+ */
+function HandMug() {
+  return (
+    <g data-el="hand-mug" opacity="0">
+      <g data-el="hand-mug-tilt" transform="translate(0 56) rotate(0)">
+        <MugShape />
+      </g>
+    </g>
+  );
 }
 
 /** Can held in the near hand during the fridge run. */
@@ -167,6 +182,7 @@ export function Character() {
                         color="var(--accent)"
                         rotate={p.armNearL}
                       >
+                        <HandMug />
                         <Hand color="var(--skin)" />
                         <HandCan />
                       </Limb>

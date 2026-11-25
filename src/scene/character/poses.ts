@@ -133,6 +133,28 @@ export const POSES = {
     armNearU: -29,
     armNearL: -95,
   },
+  // Near hand on the desk mug's handle (652, 592).
+  reachMug: {
+    ...stand,
+    ...sit,
+    torso: 6,
+    head: -6,
+    armFarU: -25,
+    armFarL: -100,
+    armNearU: 2,
+    armNearL: -137,
+  },
+  // Mug at his mouth, head tipped back a little.
+  sip: {
+    ...stand,
+    ...sit,
+    torso: 4,
+    head: -12,
+    armFarU: -25,
+    armFarL: -100,
+    armNearU: -57,
+    armNearL: -136,
+  },
   // Leaning in toward the keyboard, elbows on the desk edge, hands on keys.
   typing: {
     ...stand,

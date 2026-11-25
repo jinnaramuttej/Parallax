@@ -13,7 +13,7 @@ export function alarm({ tl, el, copy, reduce }: ActContext) {
   exitCopy(tl, copy.get("alarm"), 0.024);
 
   const ring = el("alarm-ring");
-  gsap.set([ring, el("zzz"), el("steam")], { opacity: 1 });
+  gsap.set([ring, el("zzz")], { opacity: 1 });
   wiggle(tl, el("alarm"), 0.002, 0.032, 14);
   for (let i = 0; i < 3; i++) flash(tl, el("tint-error"), 0.005 + i * 0.01, 0.008, 0.22);
   if (!reduce) shake(tl, el("shake"), 0.004, 0.028, 14, 5);

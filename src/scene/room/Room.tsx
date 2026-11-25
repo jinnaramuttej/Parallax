@@ -2,6 +2,7 @@ import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { Bed } from "./Bed";
 import { Chair } from "./Chair";
 import { Desk } from "./Desk";
+import { DeskMug } from "../props/Mug";
 import { Fridge } from "./Fridge";
 import { Lamp } from "./Lamp";
 import { MonitorFrame } from "./MonitorFrame";
@@ -20,6 +21,7 @@ export function Room() {
         <Bed />
         <Fridge />
         <Desk />
+        <DeskMug />
         <MonitorFrame />
         <Lamp />
         <Chair />

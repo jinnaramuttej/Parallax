@@ -1,46 +1,14 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { box } from "../viewport";
 
-/** Big coffee mug, out of focus, in the bottom-left corner. */
+/**
+ * Big out-of-focus mug in the bottom-left corner. Purely a foreground depth
+ * layer; the real coffee (steam, sip, click) is the mug on the desk.
+ */
 export function ForegroundMug() {
   return (
     <ParallaxLayer speed={1.45} className="scene-canvas" aria-hidden>
-      <div className="fg-steam" data-el="steam" style={box(80, 520, 200, 280)}>
-        <span className="wisp wisp-1" />
-        <span className="wisp wisp-2" />
-        <span className="wisp wisp-3" />
-      </div>
-      <div
-        className="fg-heart"
-        data-el="steam-heart"
-        style={box(110, 560, 140, 130)}
-      >
-        <svg viewBox="0 0 140 130">
-          <path
-            d="M70 118C30 88 10 66 10 42C10 22 26 10 42 10C55 10 65 18 70 28C75 18 85 10 98 10C114 10 130 22 130 42C130 66 110 88 70 118Z"
-            fill="none"
-            stroke="var(--paper)"
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-      <div
-        className="fg-burst"
-        data-el="steam-burst"
-        style={box(60, 480, 240, 320)}
-      >
-        {Array.from({ length: 7 }, (_, i) => (
-          <span key={i} className="puff" data-puff={i} />
-        ))}
-      </div>
-      <button
-        type="button"
-        className="fg-mug hotspot"
-        data-hotspot="mug"
-        aria-label="Stir the coffee"
-        style={box(60, 770, 250, 220)}
-      >
+      <div className="fg-mug" style={box(60, 770, 250, 220)}>
         <svg
           viewBox="60 770 250 220"
           className="h-full w-full overflow-visible"
@@ -72,7 +40,7 @@ export function ForegroundMug() {
             <ellipse cx="168" cy="802" rx="76" ry="9" fill="var(--wood)" />
           </g>
         </svg>
-      </button>
+      </div>
     </ParallaxLayer>
   );
 }
