@@ -2,32 +2,34 @@
 
 import { useEffect, useRef } from "react";
 import { useLenis } from "@/components/SmoothScroll";
+import { ACTS, actAt } from "@/config/acts";
+import { scrollFromProgress } from "@/config/scroll";
 import { dayStore } from "../dayStore";
-import { STOPS, TOTAL } from "../timing";
 
-/** Index of the stop the scroll is currently at (or heading into). */
-function activeStop(unit: number) {
-  let active = 0;
-  STOPS.forEach((s, i) => {
-    if (unit >= s.holdStart - 0.6) active = i;
-  });
-  return active;
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+/** Scroll position (px) at which the scene reaches a day progress. */
+export function scrollYForProgress(progress: number) {
+  const track = document.querySelector<HTMLElement>(".scene-track");
+  if (!track) return 0;
+  const top = track.getBoundingClientRect().top + window.scrollY;
+  return top + scrollFromProgress(progress) * (track.offsetHeight - window.innerHeight);
 }
 
-/** "Skip to a time of day": one button per stop, current stop highlighted. */
+/** HUD chips: one per act (from src/config/acts.ts); the current act is highlighted. */
 export function Scrubber() {
   const lenis = useLenis();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
-    let current = -1;
+    let current = "";
     const update = (p: number) => {
-      const next = activeStop(p * TOTAL);
+      const next = actAt(p).id;
       if (next === current) return;
       current = next;
       buttons.current.forEach((b, i) => {
         if (!b) return;
-        if (i === next) b.setAttribute("aria-current", "step");
+        if (ACTS[i].id === next) b.setAttribute("aria-current", "step");
         else b.removeAttribute("aria-current");
       });
     };
@@ -36,13 +38,10 @@ export function Scrubber() {
   }, []);
 
   const go = (i: number) => {
-    const track = document.querySelector<HTMLElement>(".scene-track");
-    if (!track) return;
-    const top = track.getBoundingClientRect().top + window.scrollY;
-    const length = track.offsetHeight - window.innerHeight;
-    const y = top + (STOPS[i].anchor / TOTAL) * length;
+    const y = scrollYForProgress(ACTS[i].anchor);
     if (lenis) {
-      lenis.scrollTo(y, { duration: 1.2 + Math.min(2.4, Math.abs(y - window.scrollY) / 4000) });
+      const distance = Math.abs(y - window.scrollY);
+      lenis.scrollTo(y, { duration: 1 + Math.min(2.6, distance / 4500), easing: easeInOutCubic });
     } else {
       window.scrollTo({ top: y });
     }
@@ -50,19 +49,20 @@ export function Scrubber() {
 
   return (
     <nav className="scrubber" aria-label="Skip to a time of day">
-      {STOPS.map((s, i) => (
+      {ACTS.map((act, i) => (
         <button
-          key={i}
+          key={act.id}
           ref={(b) => {
             buttons.current[i] = b;
           }}
           type="button"
           className="scrubber-stop"
+          data-act={act.id}
           onClick={() => go(i)}
-          aria-label={`Skip to ${s.time}: ${s.name}`}
+          aria-label={`Skip to ${act.label}`}
         >
           <span className="scrubber-dot" aria-hidden />
-          <span className="scrubber-time">{s.time}</span>
+          <span className="scrubber-time">{act.label}</span>
         </button>
       ))}
     </nav>

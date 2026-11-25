@@ -19,7 +19,6 @@ import { Sky } from "./layers/Sky";
 import { Skyline } from "./layers/Skyline";
 import { Stars } from "./layers/Stars";
 import { buildMasterTimeline } from "./timeline/master";
-import { STOPS, TOTAL, UNIT_VH } from "./timing";
 import { Hud } from "./ui/Hud";
 import { CopyLayer } from "./ui/Copy";
 import { setupInteractions } from "./interactions";
@@ -29,6 +28,16 @@ import { Loader } from "./ui/Loader";
 import { ScrollHint } from "./ui/ScrollHint";
 import { Scrubber } from "./ui/Scrubber";
 import { measureViewport } from "./viewport";
+import { ACTS } from "@/config/acts";
+import { progressFromScroll, scrollFromProgress, SCROLL_VH } from "@/config/scroll";
+import { formatClock, timeAt } from "@/config/timeMap";
+
+declare global {
+  interface Window {
+    /** Read-only director config for scripts and devtools (verification). */
+    __director?: unknown;
+  }
+}
 
 export function Scene() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -59,6 +68,20 @@ export function Scene() {
     );
 
     const stopInteractions = setupInteractions(stage);
+    window.__director = Object.freeze({
+      acts: ACTS.map(({ id, label, startProgress, endProgress, anchor, clock }) => ({
+        id,
+        label,
+        startProgress,
+        endProgress,
+        anchor,
+        clock,
+      })),
+      timeAt,
+      formatClock,
+      progressFromScroll,
+      scrollFromProgress,
+    });
 
     return () => {
       stopInteractions();
@@ -71,10 +94,7 @@ export function Scene() {
     <section
       ref={trackRef}
       className="scene-track"
-      style={{ height: `calc(${(TOTAL * UNIT_VH).toFixed(2)}svh + 100svh)` }}
-      data-total={TOTAL}
-      data-anchors={JSON.stringify(STOPS.map((s) => s.anchor))}
-      data-labels={JSON.stringify(STOPS.map((s) => `${s.time} ${s.name}`))}
+      style={{ height: `calc(${SCROLL_VH}svh + 100svh)` }}
       aria-label="A developer's day, from 5:59 AM to 3 AM"
     >
       <h1 className="sr-only">24 Hours of a Dev</h1>

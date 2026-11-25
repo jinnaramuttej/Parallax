@@ -3,9 +3,8 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { bonusCansStore, dayStore } from "../dayStore";
-import { CAN_EVENTS, COMMIT_EVENTS } from "../story";
+import { CAN_EVENTS, COMMIT_EVENTS } from "@/config/acts";
 import { formatClock, timeAt } from "@/config/timeMap";
-import { TOTAL } from "../timing";
 
 const countAt = (events: number[], unit: number) =>
   events.reduce((n, at) => (unit >= at ? n + 1 : n), 0);
@@ -37,7 +36,7 @@ export function Hud() {
     };
     let ready = false;
     const counters = () => {
-      const unit = dayStore.get() * TOTAL;
+      const unit = dayStore.get();
       popTo(cansRef.current, countAt(CAN_EVENTS, unit) + bonusCansStore.get(), ready);
       popTo(commitsRef.current, countAt(COMMIT_EVENTS, unit), ready);
     };

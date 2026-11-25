@@ -1,16 +1,17 @@
 import { gsap, SplitText } from "@/lib/gsap";
+import { U } from "./fx";
 import type { BuildContext } from "./master";
 
 type Split = { chars: Element[]; words: Element[]; block: Element };
 
 /**
- * Split every stop's headline into characters (masked per word) and its
+ * Split every act's headline into characters (masked per word) and its
  * subtext into words, once per timeline build. Reverted on cleanup.
  */
 export function splitCopy({ q, reduce, cleanup }: BuildContext) {
-  const splits = new Map<number, Split>();
+  const splits = new Map<string, Split>();
   q("[data-copy]").forEach((block) => {
-    const i = Number((block as HTMLElement).dataset.copy);
+    const i = (block as HTMLElement).dataset.copy ?? "";
     if (reduce) {
       splits.set(i, { chars: [], words: [], block });
       return;
@@ -40,24 +41,24 @@ export function revealCopy(tl: gsap.core.Timeline, split: Split | undefined, at:
   tl.fromTo(
     split.block,
     { scale: 1.1, y: -18 },
-    { scale: 1, y: 0, duration: 0.18, ease: "back.out(2.2)", immediateRender: false },
+    { scale: 1, y: 0, duration: 0.18 * U, ease: "back.out(2.2)", immediateRender: false },
     at,
   );
   if (!split.chars.length) {
-    tl.fromTo(split.block, { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, at);
+    tl.fromTo(split.block, { opacity: 0 }, { opacity: 1, duration: 0.2 * U, immediateRender: false }, at);
     return;
   }
   tl.fromTo(
     split.chars,
     { yPercent: 115 },
-    { yPercent: 0, duration: 0.24, stagger: 0.008, ease: "power3.out" },
+    { yPercent: 0, duration: 0.24 * U, stagger: 0.008 * U, ease: "power3.out" },
     at,
   );
   tl.fromTo(
     split.words,
     { yPercent: 110, opacity: 0 },
-    { yPercent: 0, opacity: 1, duration: 0.2, stagger: 0.012, ease: "power2.out" },
-    at + 0.14,
+    { yPercent: 0, opacity: 1, duration: 0.2 * U, stagger: 0.012 * U, ease: "power2.out" },
+    at + 0.14 * U,
   );
 }
 
@@ -67,13 +68,13 @@ export function exitCopy(tl: gsap.core.Timeline, split: Split | undefined, at: n
   if (split.chars.length) {
     tl.to(
       [...split.chars, ...split.words],
-      { yPercent: -115, duration: 0.2, stagger: 0.003, ease: "power2.in" },
+      { yPercent: -115, duration: 0.2 * U, stagger: 0.003 * U, ease: "power2.in" },
       at,
     );
   }
   // ...and peeled off again.
-  tl.to(split.block, { opacity: 0, y: -24, duration: 0.18, ease: "power1.in" }, at + 0.08);
-  tl.set(split.block, { visibility: "hidden" }, at + 0.26);
+  tl.to(split.block, { opacity: 0, y: -24, duration: 0.18 * U, ease: "power1.in" }, at + 0.08 * U);
+  tl.set(split.block, { visibility: "hidden" }, at + 0.26 * U);
 }
 
 /** Initial state for copy that is visible at progress 0 (stop 0). */

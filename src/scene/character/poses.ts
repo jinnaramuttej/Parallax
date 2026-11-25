@@ -122,6 +122,17 @@ export const POSES = {
     legNearU: 22,
     legNearL: 30,
   },
+  // Sitting at the desk, hands resting on the desk edge.
+  seated: {
+    ...stand,
+    ...sit,
+    torso: 8,
+    head: -8,
+    armFarU: -25,
+    armFarL: -100,
+    armNearU: -29,
+    armNearL: -95,
+  },
   // Leaning in toward the keyboard, elbows on the desk edge, hands on keys.
   typing: {
     ...stand,

@@ -2,8 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { dayStore } from "../dayStore";
-import { DEPLOY_SUCCESS_AT } from "../story";
-import { TOTAL } from "../timing";
+import { MOMENTS } from "@/config/acts";
 
 type Piece = {
   x: number;
@@ -101,7 +100,7 @@ export function Confetti() {
     };
 
     last = dayStore.get();
-    const at = DEPLOY_SUCCESS_AT / TOTAL;
+    const at = MOMENTS.deploySuccess;
     const off = dayStore.subscribe((p) => {
       if (last < at && p >= at) fire();
       last = p;

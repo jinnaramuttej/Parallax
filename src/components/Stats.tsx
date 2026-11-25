@@ -6,7 +6,7 @@ import { useLenis } from "@/components/SmoothScroll";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { bonusCansStore } from "@/scene/dayStore";
 import { r1, seeded } from "@/scene/random";
-import { CAN_EVENTS, COMMIT_EVENTS } from "@/scene/story";
+import { CAN_EVENTS, COMMIT_EVENTS } from "@/config/acts";
 
 const STATS = [
   { label: "Hackathons entered", value: 15, suffix: "+" },

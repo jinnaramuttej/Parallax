@@ -2,12 +2,11 @@ import { gsap } from "@/lib/gsap";
 import { bonusCansStore, dayStore } from "./dayStore";
 import { SNIPPETS } from "./layers/MonitorScreen";
 import { DESK_SLOTS, FLOOR_SLOTS } from "./props/Cans";
-import { FRIDGE_OPEN } from "./story";
-import { TOTAL } from "./timing";
+import { MOMENTS } from "@/config/acts";
 
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
-const unitNow = () => dayStore.get() * TOTAL;
+const progressNow = () => dayStore.get();
 
 /**
  * Click and hover interactions on top of the scrubbed scene. These are
@@ -30,8 +29,9 @@ export function setupInteractions(stage: HTMLElement) {
   // Fridge: door swings open, light spills, a can drops onto the pile under the desk.
   let dropped = 0;
   on(q('[data-hotspot="fridge"]')[0], "click", () => {
-    const u = unitNow();
-    const openByStory = u >= FRIDGE_OPEN[0] && u <= FRIDGE_OPEN[1];
+    const p = progressNow();
+    const [open, close] = MOMENTS.fridgeDoorOpen;
+    const openByStory = p >= open && p <= close;
     const door = el("fridge-door");
     const spill = el("fridge-spill");
     if (!openByStory && !gsap.isTweening(door)) {

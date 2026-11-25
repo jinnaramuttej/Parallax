@@ -1,6 +1,6 @@
 // Scroll through the scene with Playwright and screenshot it.
 //
-//   node scripts/shoot.mjs --mode stops   [--url http://localhost:3002] [--out shots]
+//   node scripts/shoot.mjs --mode stops   [--url http://localhost:3000] [--out shots]
 //   node scripts/shoot.mjs --mode percent --step 5
 //   node scripts/shoot.mjs --mode stops --viewport mobile --reduce
 //
@@ -60,15 +60,18 @@ const info = await page.evaluate(() => {
   return {
     top: track.getBoundingClientRect().top + window.scrollY,
     length: track.offsetHeight - window.innerHeight,
-    total: Number(track.dataset.total),
-    anchors: JSON.parse(track.dataset.anchors),
-    labels: JSON.parse(track.dataset.labels),
+    // Act anchors as scroll fractions, from the page's director config.
+    acts: window.__director.acts.map((a) => ({
+      id: a.id,
+      label: a.label,
+      scroll: window.__director.scrollFromProgress(a.anchor),
+    })),
   };
 });
 
 const targets =
   mode === "stops"
-    ? info.anchors.map((u, i) => ({ name: `stop${i}`, label: info.labels[i], progress: u / info.total }))
+    ? info.acts.map((a, i) => ({ name: `act${i}-${a.id}`, label: a.label, progress: Math.min(a.scroll, 1) }))
     : Array.from({ length: Math.floor(100 / step) + 1 }, (_, i) => ({
         name: `p${String(i * step).padStart(3, "0")}`,
         label: `${i * step}%`,

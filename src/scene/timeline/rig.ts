@@ -7,6 +7,9 @@ import {
   type RotationJoint,
 } from "../character/poses";
 
+/** One beat in day progress (see fx.ts). Kept local to avoid an import cycle. */
+const U = 1 / 15;
+
 type Q = (selector: string) => Element[];
 type TL = gsap.core.Timeline;
 
@@ -129,7 +132,7 @@ export function turn(
   rig: Rig,
   dir: 1 | -1,
   at: number,
-  duration = 0.14,
+  duration = 0.14 * U,
 ) {
   tl.to(rig.face, { ...scale(dir, 1), duration, ease: "power1.inOut" }, at);
 }
@@ -138,7 +141,7 @@ type Face = { eyes?: "open" | "closed"; mouth?: "smile" | "flat" | "o" };
 
 /** Swap expression shapes with a very short crossfade. */
 export function express(tl: TL, rig: Rig, face: Face, at: number) {
-  const d = 0.04;
+  const d = 0.04 * U;
   if (face.eyes) {
     tl.to(
       rig.eyesOpen,
