@@ -2,7 +2,15 @@
 export const CANVAS_W = 1600;
 export const CANVAS_H = 900;
 /** Narrowest slice of the canvas we always keep visible (portrait phones). */
-const MIN_VISIBLE_W = 560;
+export const MIN_VISIBLE_W = 560;
+
+/**
+ * The same scale as measureViewport, as a script that runs in <head> before
+ * the first paint (src/app/layout.tsx), so the canvas never resizes (and
+ * shifts) when the scene hydrates. It measures with the scrollbar in place,
+ * as the page always has one (globals.css keeps its gutter reserved).
+ */
+export const SCALE_SCRIPT = `(function(){try{var d=document.documentElement,o=d.style.overflowY;d.style.overflowY="scroll";var w=d.clientWidth,h=window.innerHeight;d.style.overflowY=o;d.style.setProperty("--s",Math.max(w/${CANVAS_W},Math.min(h/${CANVAS_H},w/${MIN_VISIBLE_W})).toFixed(5))}catch(e){}})()`;
 
 export const viewport = { w: 0, h: 0, s: 1 };
 

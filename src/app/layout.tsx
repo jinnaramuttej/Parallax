@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bangers, Bricolage_Grotesque, JetBrains_Mono, Patrick_Hand } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { SCALE_SCRIPT } from "@/scene/viewport";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -58,7 +59,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${display.variable} ${mono.variable} ${impact.variable} ${hand.variable} antialiased`}>
+    // suppressHydrationWarning: the inline script sets --s on <html> before React hydrates.
+    <html lang="en" className={`${display.variable} ${mono.variable} ${impact.variable} ${hand.variable} antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SCALE_SCRIPT }} />
+      </head>
       <body>
         <SmoothScroll>{children}</SmoothScroll>
       </body>

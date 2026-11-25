@@ -79,6 +79,12 @@
 html {
   background: var(--ink);
   color: var(--paper);
+  /* The page always scrolls: keep the scrollbar's room so the canvas width never changes. */
+  scrollbar-gutter: stable;
+}
+/* Lenis stops scrolling with overflow: clip, which drops the gutter; hidden keeps it. */
+html.lenis.lenis-stopped:not(.lenis-autoToggle) {
+  overflow: hidden;
 }
 
 body {
