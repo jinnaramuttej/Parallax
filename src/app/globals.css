@@ -838,7 +838,8 @@ body {
     padding: 8px 7px;
     font-size: 11px;
   }
-  .scrubber-dot {
+  .scrubber-dot,
+  .scrubber-word {
     display: none;
   }
   .scroll-hint {
