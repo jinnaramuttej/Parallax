@@ -6,6 +6,7 @@ import { breakAct } from "./break";
 import { coffee } from "./coffee";
 import { dark } from "./dark";
 import { focus } from "./focus";
+import { multitask } from "./multitask";
 
 /** Acts not choreographed yet. */
 const pending = () => {};
@@ -18,7 +19,7 @@ export const ACT_BUILDERS: Record<ActId, (ctx: ActContext) => void> = {
   boot: boot,
   focus: focus,
   break: breakAct,
-  multitask: pending,
+  multitask: multitask,
   bug: pending,
   fridge: pending,
   deploy: pending,
