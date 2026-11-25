@@ -6,6 +6,7 @@ import { breakAct } from "./break";
 import { bug } from "./bug";
 import { coffee } from "./coffee";
 import { dark } from "./dark";
+import { deploy } from "./deploy";
 import { focus } from "./focus";
 import { fridge } from "./fridge";
 import { multitask } from "./multitask";
@@ -24,5 +25,5 @@ export const ACT_BUILDERS: Record<ActId, (ctx: ActContext) => void> = {
   multitask: multitask,
   bug: bug,
   fridge: fridge,
-  deploy: pending,
+  deploy: deploy,
 };
