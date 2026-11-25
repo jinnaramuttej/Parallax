@@ -28,6 +28,7 @@ export function fridge({ tl, el, q, copy, rig }: ActContext) {
   const [, close] = MOMENTS.fridgeDoorOpen;
   tl.to(el("fridge-door"), { scaleX: 1, svgOrigin: "1502 632", duration: 0.012, ease: "power2.in" }, close - 0.012);
   fadeTo(tl, el("fridge-spill"), close - 0.012, 0.01, 0);
+  fadeTo(tl, el("fridge-light"), close - 0.006, 0.006, 0);
 
   turn(tl, rig, -1, 0.846);
   walk(tl, rig, POSES.holdCan.x, 640, 0.849, 0.064);

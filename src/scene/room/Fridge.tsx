@@ -1,24 +1,25 @@
+import { Can } from "../props/Cans";
+
 /** Hinge of the main door (right edge). The door opens by flipping scaleX here. */
 export const FRIDGE_HINGE = { x: 1502, y: 632 };
 
 function SmallCan({ x, y }: { x: number; y: number }) {
   return (
-    <g>
-      <rect x={x} y={y} width="16" height="28" rx="4" fill="var(--can)" />
-      <rect
-        x={x + 1}
-        y={y - 2}
-        width="14"
-        height="4"
-        rx="2"
-        fill="var(--can-dark)"
-      />
+    <g transform={`translate(${x} ${y - 2}) scale(0.82)`}>
+      <Can />
     </g>
   );
 }
 
-/** Fridge with a working main door, its lit interior, and a plant on top. */
-export function Fridge() {
+export type FridgeState = "closed" | "open";
+
+/**
+ * Fridge with a working main door, its lit interior, and a plant on top.
+ * `state` sets the door at first (the timeline opens it by flipping scaleX
+ * about the hinge; the floor light spill lives in the glow layer).
+ */
+export function Fridge({ state = "closed" }: { state?: FridgeState }) {
+  const open = state === "open";
   return (
     <g>
       <rect
@@ -36,6 +37,16 @@ export function Fridge() {
         height="238"
         rx="6"
         fill="var(--fridge-inside)"
+      />
+      <rect
+        data-el="fridge-light"
+        x="1342"
+        y="512"
+        width="148"
+        height="238"
+        rx="6"
+        fill="url(#fridge-light)"
+        opacity={open ? 1 : 0}
       />
       <g fill="var(--wall-shade)">
         <rect x="1342" y="584" width="148" height="5" />
@@ -90,7 +101,17 @@ export function Fridge() {
         opacity="0.6"
       />
 
-      <g data-el="fridge-door">
+      <defs>
+        <radialGradient id="fridge-light" cx="0.5" cy="0.05" r="0.9">
+          <stop offset="0" stopColor="var(--paper)" />
+          <stop offset="0.6" stopColor="var(--fridge-light)" stopOpacity="0.6" />
+          <stop offset="1" stopColor="var(--fridge-light)" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <g
+        data-el="fridge-door"
+        transform={open ? `translate(${FRIDGE_HINGE.x} 0) scale(-0.55 1) translate(${-FRIDGE_HINGE.x} 0)` : undefined}
+      >
         <rect
           x="1330"
           y="504"

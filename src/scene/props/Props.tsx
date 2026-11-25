@@ -1,7 +1,7 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { AlarmClock } from "./AlarmClock";
 import { Blanket } from "./Blanket";
-import { Cans } from "./Cans";
+import { Cans, DeskCan } from "./Cans";
 import { DeskSteam } from "./DeskSteam";
 import { Papers } from "./Papers";
 import { Zzz } from "./Zzz";
@@ -15,6 +15,7 @@ export function Props() {
         <AlarmClock />
         <Papers />
         <Cans />
+        <DeskCan />
       </svg>
       <Zzz />
       <DeskSteam />

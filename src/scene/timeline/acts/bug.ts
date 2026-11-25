@@ -61,4 +61,5 @@ export function bug({ tl, el, q, copy, rig, reduce }: ActContext) {
   const [open] = MOMENTS.fridgeDoorOpen;
   tl.to(el("fridge-door"), { scaleX: -0.55, svgOrigin: "1502 632", duration: 0.014, ease: "power2.out" }, open);
   fadeTo(tl, el("fridge-spill"), open, 0.014, 0.75);
+  fadeTo(tl, el("fridge-light"), open, 0.01, 1);
 }

@@ -1,6 +1,7 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { Head } from "./Head";
 import { Limb } from "./Limb";
+import { Can } from "../props/Cans";
 import { MugShape } from "../props/Mug";
 import { CatRig } from "./Cat";
 import { POSES } from "./poses";
@@ -31,9 +32,9 @@ function HandMug() {
 function HandCan() {
   return (
     <g data-el="hand-can" opacity="0">
-      <rect x="-9" y="44" width="18" height="32" rx="4" fill="var(--can)" />
-      <rect x="-8" y="42" width="16" height="4" rx="2" fill="var(--can-dark)" />
-      <path d="M2 52L-3 61H1L-1 68L5 58H1Z" fill="var(--paper)" />
+      <g transform="translate(-10 42)">
+        <Can />
+      </g>
     </g>
   );
 }
