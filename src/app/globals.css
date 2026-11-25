@@ -937,7 +937,8 @@ body {
 /* Desktop notification (break act). */
 .toast {
   position: absolute;
-  top: clamp(4.5rem, 12vh, 6.5rem);
+  /* Below the sound button and its first-visit tip. */
+  top: calc(max(14px, env(safe-area-inset-top)) + 128px);
   right: clamp(0.75rem, 3vw, 2rem);
   z-index: 6;
   display: flex;
@@ -1336,7 +1337,17 @@ body {
   will-change: transform;
 }
 
-/* Phones: compact chips (dots, the current act labelled), transport above them. */
+/* Up to tablet widths the chips reach the left edge: the transport sits above them. */
+@media (max-width: 980px) {
+  .autoplay-controls {
+    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 56px);
+  }
+  .intro {
+    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 112px);
+  }
+}
+
+/* Phones: compact chips (dots, the current act labelled). */
 @media (max-width: 640px) {
   .scrubber-stop {
     padding: 8px 7px;
@@ -1350,9 +1361,6 @@ body {
   .autoplay-controls {
     bottom: calc(max(14px, env(safe-area-inset-bottom)) + 52px);
     height: 40px;
-  }
-  .intro {
-    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 108px);
   }
 }
 
