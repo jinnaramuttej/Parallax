@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { bonusCansStore, dayStore } from "../dayStore";
 import { CAN_EVENTS, COMMIT_EVENTS } from "../story";
-import { clockAt, formatClock, TOTAL } from "../timing";
+import { formatClock, timeAt } from "@/config/timeMap";
+import { TOTAL } from "../timing";
 
 const countAt = (events: number[], unit: number) =>
   events.reduce((n, at) => (unit >= at ? n + 1 : n), 0);
@@ -27,7 +28,7 @@ export function Hud() {
   useEffect(() => {
     let last = "";
     const update = (p: number) => {
-      const { time, period } = formatClock(clockAt(p * TOTAL));
+      const { time, period } = formatClock(timeAt(p));
       const label = time + period;
       if (label === last) return;
       last = label;

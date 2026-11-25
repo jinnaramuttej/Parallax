@@ -1,6 +1,7 @@
 import { gsap } from "@/lib/gsap";
 import { dayStore } from "../dayStore";
-import { clockAt, TOTAL } from "../timing";
+import { timeAt } from "@/config/timeMap";
+import { TOTAL } from "../timing";
 import { addCharacterBlocking } from "./blocking";
 import { createCamera, type CameraState } from "./camera";
 import { splitCopy } from "./copy";
@@ -56,7 +57,8 @@ export function buildMasterTimeline({
 
   function render() {
     dayStore.set(tl.progress());
-    world.apply(clockAt(tl.time()));
+    // The clock comes from the time map, never from raw scroll.
+    world.apply(timeAt(tl.progress()));
     camera.apply();
   }
 
