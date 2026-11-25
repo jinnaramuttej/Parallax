@@ -24,7 +24,7 @@ export function Glows() {
       <div className="glow-posters">
         <PostersGlow />
       </div>
-      <div className="glow-rgb">
+      <div className="glow-rgb" data-el="rgb-glow">
         <RgbStrip state="cyan" />
       </div>
       <div className="glow glow-screen" style={box(500, 400, 440, 360)} />

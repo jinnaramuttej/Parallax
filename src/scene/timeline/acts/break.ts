@@ -63,6 +63,9 @@ export function breakAct({ tl, el, q, rig, cat }: ActContext) {
   const overlay = el("anime-overlay");
   gsap.set(overlay, { ...SMALL, opacity: 0 });
   tl.set(overlay, { opacity: 1 }, 0.432);
+  // The keyboard glow sits above the screens; hide it while the episode fills the frame.
+  fadeTo(tl, el("rgb-glow"), 0.432, 0.004, 0);
+  fadeTo(tl, el("rgb-glow"), 0.46, 0.004, 1);
   tl.to(overlay, { scaleX: 1, scaleY: 1, skewY: 0, duration: 0.014, ease: "power2.inOut" }, 0.432);
 
   // "Standup in 2 min."
