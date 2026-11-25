@@ -1,6 +1,6 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { DESK_MUG_HANDLE } from "../props/Mug";
-import { SCREEN } from "../room/MonitorFrame";
+import { MAIN_SCREEN as SCREEN } from "../room/layout";
 import { box } from "../viewport";
 
 /**

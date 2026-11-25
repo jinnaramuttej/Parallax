@@ -20,7 +20,7 @@ function HandMug() {
   return (
     <g data-el="hand-mug" opacity="0">
       <g data-el="hand-mug-tilt" transform="translate(0 56) rotate(0)">
-        <MugShape />
+        <MugShape id="mug-hand" />
       </g>
     </g>
   );

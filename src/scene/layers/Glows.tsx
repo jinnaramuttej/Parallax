@@ -1,4 +1,5 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
+import { RgbStrip } from "../room/desk/RgbStrip";
 import { box } from "../viewport";
 
 /**
@@ -14,6 +15,9 @@ export function Glows() {
       aria-hidden
     >
       <div className="glow glow-lamp" style={box(940, 400, 320, 280)} />
+      <div className="glow-rgb">
+        <RgbStrip state="cyan" />
+      </div>
       <div className="glow glow-screen" style={box(500, 400, 440, 360)} />
       <div
         className="glow glow-success"

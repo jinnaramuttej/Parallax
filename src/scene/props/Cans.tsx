@@ -4,12 +4,12 @@
  * dropped from the fridge by clicking it.
  */
 export const DESK_SLOTS: [number, number][] = [
-  [1044, 570],
-  [1066, 570],
-  [1088, 570],
-  [1055, 536],
-  [1077, 536],
-  [1066, 502],
+  [1204, 570],
+  [1224, 570],
+  [1244, 570],
+  [1214, 536],
+  [1234, 536],
+  [1224, 502],
 ];
 
 export const FLOOR_SLOTS: [number, number][] = [

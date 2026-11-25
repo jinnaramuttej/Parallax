@@ -26,6 +26,7 @@
   --plant: #2f9e74;
   --plant-dark: #1f7a58;
   --screen: #151735;
+  --rgb-violet: #a98bff;
   --fridge-inside: #fff1cc;
   --fridge-light: #eaf6ff;
   --tint-dawn: #ffb0c4;
@@ -163,6 +164,27 @@ body {
 .star-twinkle {
   animation: twinkle 2.6s ease-in-out infinite alternate;
   will-change: opacity;
+}
+
+/* Data-driven prop states rendered in HTML (see src/scene/Stateful.tsx). */
+.prop-state {
+  position: absolute;
+  inset: 0;
+}
+
+/* Keyboard RGB underglow, bright above the night tint. */
+.glow-rgb {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.glow-rgb > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
 /* Room lighting: opacity only, read from CSS variables set by the world. */

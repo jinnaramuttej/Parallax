@@ -4,8 +4,15 @@ import { Chair } from "./Chair";
 import { Desk } from "./Desk";
 import { DeskMug } from "../props/Mug";
 import { Fridge } from "./Fridge";
-import { Lamp } from "./Lamp";
 import { MonitorFrame } from "./MonitorFrame";
+import { DeskMat } from "./desk/DeskMat";
+import { Coaster, DeskPlant } from "./desk/DeskPlant";
+import { HeadphoneStand } from "./desk/HeadphoneStand";
+import { Keyboard } from "./desk/Keyboard";
+import { Laptop } from "./desk/Laptop";
+import { Mouse } from "./desk/Mouse";
+import { Notepad, StickyNotes } from "./desk/Notepad";
+import { SecondMonitor } from "./desk/SecondMonitor";
 import { Posters } from "./Posters";
 import { Wall } from "./Wall";
 import { Window } from "./Window";
@@ -21,9 +28,18 @@ export function Room() {
         <Bed />
         <Fridge />
         <Desk />
-        <DeskMug />
+        <SecondMonitor />
         <MonitorFrame />
-        <Lamp />
+        <StickyNotes />
+        <DeskMat />
+        <Keyboard />
+        <Mouse />
+        <Coaster />
+        <DeskMug />
+        <Notepad />
+        <DeskPlant />
+        <Laptop />
+        <HeadphoneStand />
         <Chair />
       </svg>
     </ParallaxLayer>
