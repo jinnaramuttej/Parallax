@@ -37,6 +37,8 @@ let state: AutoplayState = "idle";
 const listeners = new Set<() => void>();
 const pos = { y: 0 };
 let travel: gsap.core.Tween | null = null;
+/** True while Lenis is animating one of our segments. */
+let lenisTravel = false;
 let dwellTimer = 0;
 let token = 0;
 let lastY = 0;
@@ -66,9 +68,13 @@ export const autoplay = {
 function stopMotion() {
   travel?.kill();
   travel = null;
+  lenisTravel = false;
   window.clearTimeout(dwellTimer);
   token++;
 }
+
+const sineInOut = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
+const quadInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
 function stageEnd() {
   const stats = document.querySelector<HTMLElement>(".stats");
@@ -102,6 +108,27 @@ function travelTo(index: number) {
   pos.y = window.scrollY;
   const distance = Math.abs(target - pos.y);
   const duration = Math.max(1.2, distance / (window.innerHeight * SPEED_VH));
+  const arrive = () => {
+    if (my !== token) return;
+    travel = null;
+    lenisTravel = false;
+    if (end) {
+      set("done");
+      detachInput();
+    } else dwell(index);
+  };
+
+  // Smooth scroll: let Lenis animate the segment in its own frame loop, the
+  // same path as a wheel scroll (no scroll writes and reads interleaved
+  // with the scene's DOM writes).
+  const lenis = getLenis();
+  if (lenis) {
+    lenisTravel = true;
+    lenis.scrollTo(target, { duration, easing: end ? quadInOut : sineInOut, force: true, onComplete: arrive });
+    return;
+  }
+
+  // Reduced motion (native scroll): step the scroll from a tween.
   travel = gsap.to(pos, {
     y: target,
     duration,
@@ -113,14 +140,7 @@ function travelTo(index: number) {
       lastT = now;
       setScroll(pos.y);
     },
-    onComplete: () => {
-      if (my !== token) return;
-      travel = null;
-      if (end) {
-        set("done");
-        detachInput();
-      } else dwell(index);
-    },
+    onComplete: arrive,
   });
 }
 
@@ -172,9 +192,16 @@ export function play() {
 export function pause(smooth = true) {
   if (state !== "playing") return;
   const wasTravelling = Boolean(travel);
+  const wasLenis = lenisTravel;
   stopMotion();
   set("paused");
   detachInput();
+  const lenis = getLenis();
+  if (lenis && wasLenis) {
+    // Ease out of the segment (or, for the visitor's own scroll, let Lenis follow it).
+    if (smooth) lenis.scrollTo(window.scrollY + lenis.velocity * 14, { duration: 0.5, easing: (t) => 1 - (1 - t) * (1 - t), force: true });
+    return;
+  }
   if (smooth && wasTravelling && Math.abs(velocity) > 0.01) {
     pos.y = window.scrollY;
     travel = gsap.to(pos, {
@@ -208,6 +235,8 @@ export function replay() {
 
 /** Tear down (unmount). */
 export function resetAutoplay() {
+  const lenis = getLenis();
+  if (lenisTravel && lenis) lenis.scrollTo(window.scrollY, { immediate: true, force: true });
   stopMotion();
   detachInput();
   set("idle");
