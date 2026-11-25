@@ -1,8 +1,10 @@
 import { gsap, SplitText } from "@/lib/gsap";
 import { CAPTIONS, SAFE_ZONES, ZONES, type Caption, type Zone } from "@/config/captions";
+import { dayStore } from "../dayStore";
 import { seeded } from "../random";
 import { shake } from "./fx";
 import type { BuildContext } from "./master";
+import { viewport } from "../viewport";
 
 type Rect = { x: number; y: number; w: number; h: number };
 /** A keep-out area and how bad covering it is (face and HUD far worse than a screen edge). */
@@ -82,33 +84,51 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
     return out;
   }
 
-  /** Layer px per screen px, and its screen origin. */
-  function layerFrame(layer: HTMLElement) {
+  type Frame = { left: number; top: number; scale: number };
+
+  /** Layer px per screen px, and its screen origin (one rect read). */
+  function layerFrame(layer: HTMLElement): Frame {
     const r = layer.getBoundingClientRect();
-    return { left: r.left, top: r.top, scale: r.width / (layer.offsetWidth || 1) };
+    // The layer is the 1600x900 canvas at --s; its own width never changes between resizes.
+    return { left: r.left, top: r.top, scale: r.width / (1600 * viewport.s || 1) };
   }
 
+  /** A caption's own size in layer px, measured once (its text never changes). */
+  const sizes = new WeakMap<HTMLElement, { w: number; h: number }>();
+  function dims(el: HTMLElement) {
+    let d = sizes.get(el);
+    if (!d) {
+      d = { w: el.offsetWidth, h: el.offsetHeight };
+      sizes.set(el, d);
+    }
+    return d;
+  }
+  const onResize = () => {
+    for (const n of nodes.values()) sizes.delete(n.el);
+  };
+  window.addEventListener("resize", onResize);
+  cleanup.push(() => window.removeEventListener("resize", onResize));
+
   /** Put a caption's centre at a screen point (outer element: x, y, scale only). */
-  function setCentre(n: { el: HTMLElement; layer: HTMLElement }, cx: number, cy: number, counter: number, glide = false) {
-    const f = layerFrame(n.layer);
-    const w = n.el.offsetWidth;
-    const h = n.el.offsetHeight;
+  function setCentre(n: { el: HTMLElement; layer: HTMLElement }, cx: number, cy: number, counter: number, glide = false, frame?: Frame) {
+    const f = frame ?? layerFrame(n.layer);
+    const { w, h } = dims(n.el);
     const to = { x: (cx - f.left) / f.scale - w / 2, y: (cy - f.top) / f.scale - h / 2, scale: counter, transformOrigin: "50% 50%" };
     if (glide && !reduce) gsap.to(n.el, { ...to, duration: 0.45, ease: "power2.out", overwrite: "auto" });
     else gsap.set(n.el, { ...to, overwrite: "auto" });
   }
 
   /** Captions keep a steady size on screen when the camera zooms in. */
-  function counterScale(layer: HTMLElement) {
-    const s = layerFrame(layer).scale / (parseFloat(getComputedStyle(stage).getPropertyValue("--s")) || 1);
-    return 1 / Math.sqrt(Math.max(0.5, s));
+  function counterScale(f: Frame) {
+    return 1 / Math.sqrt(Math.max(0.5, f.scale));
   }
 
   /** On-screen size of a caption, including the box its tilt sweeps. */
-  function screenSize(n: { el: HTMLElement; layer: HTMLElement; cap?: Caption }, counter: number) {
-    const f = layerFrame(n.layer);
-    const w = n.el.offsetWidth * f.scale * counter;
-    const h = n.el.offsetHeight * f.scale * counter;
+  function screenSize(n: { el: HTMLElement; layer: HTMLElement; cap?: Caption }, counter: number, frame?: Frame) {
+    const f = frame ?? layerFrame(n.layer);
+    const d = dims(n.el);
+    const w = d.w * f.scale * counter;
+    const h = d.h * f.scale * counter;
     const a = (Math.abs(n.cap?.rotation ?? 0) * Math.PI) / 180;
     return { w: w * Math.cos(a) + h * Math.sin(a), h: w * Math.sin(a) + h * Math.cos(a) };
   }
@@ -146,20 +166,21 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
     const cap = n.cap!;
     if (cap.type === "balloon") return placeBalloon(n, cap.id);
     const sr = stage.getBoundingClientRect();
-    let counter = counterScale(n.layer);
-    let size = screenSize(n, counter);
+    const f = layerFrame(n.layer);
+    let counter = counterScale(f);
+    let size = screenSize(n, counter, f);
     // Narrow screens: shrink long words until they fit across the stage.
     const room = sr.width - MARGIN * 2;
     if (size.w > room) {
       counter *= room / size.w;
-      size = screenSize(n, counter);
+      size = screenSize(n, counter, f);
     }
     const choice = pick(
       cap.id,
       zoneList(cap).map((z) => ({ zone: z, cx: sr.left + ZONES[z][0] * sr.width, cy: sr.top + ZONES[z][1] * sr.height })),
       size,
     );
-    setCentre(n, choice.rect.x + size.w / 2, choice.rect.y + size.h / 2, counter, glide);
+    setCentre(n, choice.rect.x + size.w / 2, choice.rect.y + size.h / 2, counter, glide, f);
     placed.set(cap.id, { id: cap.id, rect: choice.rect, zone: choice.zone });
     lastMove.set(cap.id, performance.now());
     drawDebug();
@@ -172,7 +193,10 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
   const lastMove = new Map<string, number>();
   function recheck(n: { el: HTMLElement; inner: HTMLElement; layer: HTMLElement; cap?: Caption }) {
     const id = n.cap!.id;
-    if (performance.now() - (lastMove.get(id) ?? 0) < 350) return;
+    const t = performance.now();
+    // At most ~3 checks a second (each one reads a dozen rects).
+    if (t - (lastMove.get(id) ?? 0) < 350) return;
+    lastMove.set(id, t);
     const body = n.el.querySelector(".cap-body");
     if (!body) return;
     const now = toRect(body.getBoundingClientRect());
@@ -184,12 +208,16 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
   // -------------------------------------------------------------- balloons
   const balloonSide = new Map<string, string>();
 
+  const lastCheck = new Map<string, number>();
+  const face = () => stage.querySelector("[data-face]");
+
   function placeBalloon(n: { el: HTMLElement; layer: HTMLElement }, id: string, keepSide = false) {
-    const head = stage.querySelector("[data-face]");
+    const head = face();
     if (!head) return;
     const h = head.getBoundingClientRect();
-    const counter = counterScale(n.layer);
-    const size = screenSize(n, counter);
+    const f = layerFrame(n.layer);
+    const counter = counterScale(f);
+    const size = screenSize(n, counter, f);
     const gap = 18;
     const all = [
       { zone: "above-right", cx: h.right + size.w / 2 - h.width * 0.15, cy: h.top - size.h / 2 - gap },
@@ -204,23 +232,27 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
       const k = all.find((c) => c.zone === balloonSide.get(id));
       if (k) {
         const rect = clampRect(k.cx, k.cy, size);
-        if (score(rect, forbidden(id)) < 600) choice = { zone: k.zone, rect };
+        // The full keep-out check is costly; while following, run it ~3 times a second.
+        const now = performance.now();
+        if (now - (lastCheck.get(id) ?? 0) < 320) choice = { zone: k.zone, rect };
+        else {
+          lastCheck.set(id, now);
+          if (score(rect, forbidden(id)) < 600) choice = { zone: k.zone, rect };
+        }
       }
     }
     choice ??= pick(id, all, size);
     balloonSide.set(id, choice.zone);
     const cx = choice.rect.x + size.w / 2;
     const cy = choice.rect.y + size.h / 2;
-    setCentre(n, cx, cy, counter);
+    setCentre(n, cx, cy, counter, false, f);
     placed.set(id, { id, rect: choice.rect, zone: choice.zone });
 
     // Tail: from the balloon's edge toward his mouth, drawn in the balloon's own px.
     const path = n.el.querySelector<SVGPathElement>("[data-cap-tail]");
     if (path) {
-      const f = layerFrame(n.layer);
       const k = f.scale * counter;
-      const w = n.el.offsetWidth;
-      const hh = n.el.offsetHeight;
+      const { w, h: hh } = dims(n.el);
       const mouth = { x: h.left + h.width * 0.7, y: h.top + h.height * 0.62 };
       let tx = (mouth.x - cx) / k;
       let ty = (mouth.y - cy) / k;
@@ -245,7 +277,7 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
         `M${c(w / 2 + bx + ox)} ${c(hh / 2 + by + oy)}Q${c(w / 2 + (bx + tx) / 2 + ox * 0.2)} ${c(hh / 2 + (by + ty) / 2 + oy * 0.2)} ${c(w / 2 + tx)} ${c(hh / 2 + ty)}Q${c(w / 2 + (bx + tx) / 2 - ox * 0.6)} ${c(hh / 2 + (by + ty) / 2 - oy * 0.6)} ${c(w / 2 + bx - ox)} ${c(hh / 2 + by - oy)}Z`,
       );
     }
-    drawDebug();
+    if (!keepSide) drawDebug();
   }
 
   // ----------------------------------------------------- scrubbed captions
@@ -383,7 +415,17 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
       { opacity: 1, scale: 1, rotation: 0, duration: reduce ? 0.2 : 0.38, ease: reduce ? "none" : "back.out(2.6)", overwrite: true },
     );
     // Follow his head while it is up (he may be walking).
-    follow = () => placeBalloon(n, id, true);
+    // Only when the day moves: while it holds still (autoplay waiting on a
+    // line), he does not move either, so there is nothing to measure.
+    let lastP = dayStore.get();
+    let lastW = window.innerWidth;
+    follow = () => {
+      const p = dayStore.get();
+      if (p === lastP && window.innerWidth === lastW) return;
+      lastP = p;
+      lastW = window.innerWidth;
+      placeBalloon(n, id, true);
+    };
     gsap.ticker.add(follow);
     if (opts?.duration) hideTimer = window.setTimeout(() => hideBalloonNow(id), opts.duration);
     return { hide: () => hideBalloonNow(id) };
