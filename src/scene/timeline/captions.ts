@@ -324,7 +324,9 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
     } else if (cap.entrance === "stamp") {
       tl.fromTo(
         n.inner,
-        { scale: 2.8, opacity: 0, rotation: rot + 6 },
+        // Slams down from a bit above life size (much bigger and it would
+        // cover his face and the screens for a few frames on the way in).
+        { scale: 1.7, opacity: 0, rotation: rot + 6 },
         { scale: 1, opacity: 1, rotation: rot, duration: d * 0.5, ease: "power4.in", immediateRender: false },
         cap.enter,
       );
@@ -338,7 +340,8 @@ export function buildCaptions({ tl, stage, q, reduce, cleanup }: BuildContext): 
         const base = { rotation: Number(gsap.getProperty(ch, "rotation")) || 0, yPercent: Number(gsap.getProperty(ch, "yPercent")) || 0 };
         tl.fromTo(
           ch,
-          { xPercent: (rand() * 2 - 1) * 500, yPercent: (rand() * 2 - 1) * 300, rotation: (rand() * 2 - 1) * 120, opacity: 0 },
+          // Letters fly in from close by, so they never sweep across the HUD.
+          { xPercent: (rand() * 2 - 1) * 220, yPercent: (rand() * 2 - 1) * 140, rotation: (rand() * 2 - 1) * 70, opacity: 0 },
           { xPercent: 0, yPercent: base.yPercent, rotation: base.rotation, opacity: 1, duration: d, ease: i % 3 === 0 ? "bounce.out" : "back.out(2)", immediateRender: false },
           cap.enter + (i * d * 0.6) / targets.length,
         );
