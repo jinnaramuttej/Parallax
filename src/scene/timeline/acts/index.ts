@@ -1,6 +1,7 @@
 import type { ActId } from "@/config/acts";
 import type { ActContext } from "../master";
 import { alarm } from "./alarm";
+import { coffee } from "./coffee";
 import { dark } from "./dark";
 
 /** Acts not choreographed yet. */
@@ -10,7 +11,7 @@ const pending = () => {};
 export const ACT_BUILDERS: Record<ActId, (ctx: ActContext) => void> = {
   dark: dark,
   alarm: alarm,
-  coffee: pending,
+  coffee: coffee,
   boot: pending,
   focus: pending,
   break: pending,
