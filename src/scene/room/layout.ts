@@ -48,3 +48,8 @@ export function screenPath(name: keyof typeof SCREENS) {
   const pts = name === "second" ? corners.map(([x, y]) => tiltPoint(x, y)) : corners;
   return `M${pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L")}Z`;
 }
+
+/** Gallery crops (viewBox strings) around each screen's hardware. */
+export const MAIN_VIEW = "806 420 268 200";
+export const SECOND_VIEW = "652 452 172 160";
+export const LAPTOP_BEZEL_VIEW = "1056 524 112 92";
