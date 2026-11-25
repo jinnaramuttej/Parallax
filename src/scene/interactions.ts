@@ -1,6 +1,6 @@
 import { gsap } from "@/lib/gsap";
 import { bonusCansStore, dayStore } from "./dayStore";
-import { SNIPPETS } from "./layers/MonitorScreen";
+import { SNIPPETS } from "./screens/CodeEditor";
 import { DESK_SLOTS, FLOOR_SLOTS } from "./props/Cans";
 import { MOMENTS } from "@/config/acts";
 
@@ -66,7 +66,7 @@ export function setupInteractions(stage: HTMLElement) {
     const next = q(`[data-snippet="${snippet}"]`)[0];
     gsap.to(prev, { opacity: 0, duration: 0.12 });
     gsap.fromTo(next, { opacity: 0 }, { opacity: 1, duration: 0.2, delay: 0.08 });
-    const code = el("screen-code");
+    const code = q('[data-prop="screen-main"] > [data-state="code"]')[0];
     if (Number(gsap.getProperty(code, "opacity")) < 0.5) {
       gsap.timeline().to(code, { opacity: 1, duration: 0.15 }).to(code, { opacity: 0, duration: 0.3 }, 1.6);
     }

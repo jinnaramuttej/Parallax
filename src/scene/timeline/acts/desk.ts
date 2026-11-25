@@ -2,7 +2,7 @@ import { POSES, type Pose } from "../../character/poses";
 import { exitCopy, revealCopy } from "../copy";
 import type { ActContext } from "../master";
 import { express, poseTo, rotate } from "../rig";
-import { screen, typingWiggle } from "./shared";
+import { screens, typingWiggle } from "./shared";
 
 /** Direction his near forearm points in the room (0 = straight down). */
 const forearm = (p: Pose) => p.body + p.torso + p.armNearU + p.armNearL;
@@ -62,7 +62,7 @@ export function desk({ tl, el, q, copy, rig }: ActContext) {
   tl.to(heart, { opacity: 0, y: -60, scale: 1.2, duration: 0.014, ease: "sine.in" }, 0.268);
 
   // Code second.
-  screen(tl, el, "code", 0.245, true);
+  screens(tl, q, 0.245, "code", "terminal", "chat");
   poseTo(tl, rig, "typing", 0.25, 0.012);
   express(tl, rig, { mouth: "flat" }, 0.258);
   typingWiggle(tl, rig, 0.264, 0.46 - 0.264);

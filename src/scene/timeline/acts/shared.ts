@@ -1,9 +1,9 @@
 import { POSES } from "../../character/poses";
 import { U } from "../fx";
+import { setState } from "../propState";
 import { rotate, type Rig } from "../rig";
 
 type TL = gsap.core.Timeline;
-type El = (name: string) => Element;
 
 /** Small forearm taps while he types, scrubbed with the scroll. */
 export function typingWiggle(tl: TL, rig: Rig, at: number, duration: number) {
@@ -18,9 +18,18 @@ export function typingWiggle(tl: TL, rig: Rig, at: number, duration: number) {
   }
 }
 
-/** Switch a monitor screen state on or off. */
-export function screen(tl: TL, el: El, name: "code" | "error" | "deploy" | "success", at: number, on: boolean, d = 0.06 * U) {
-  tl.to(el(`screen-${name}`), { opacity: on ? 1 : 0, duration: d }, at);
+/** Switch all three screens at once (main state, plus second/laptop states). */
+export function screens(
+  tl: TL,
+  q: (s: string) => Element[],
+  at: number,
+  main: string,
+  second?: string,
+  laptop?: string,
+) {
+  setState(tl, q, "screen-main", main, at);
+  if (second) setState(tl, q, "screen-second", second, at);
+  if (laptop) setState(tl, q, "screen-laptop", laptop, at);
 }
 
 /** An empty can drops onto its slot on the desk. */

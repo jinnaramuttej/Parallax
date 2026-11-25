@@ -1,5 +1,5 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
-import { SCREEN } from "../room/MonitorFrame";
+import { screenPath } from "../room/layout";
 import { WINDOW } from "../room/Wall";
 import { box } from "../viewport";
 
@@ -8,7 +8,9 @@ import { box } from "../viewport";
 const ROOM_MASK = [
   "M-700 -500H2300V1500H-700Z",
   `M${WINDOW.x} ${WINDOW.y}V${WINDOW.y + WINDOW.h}H${WINDOW.x + WINDOW.w}V${WINDOW.y}Z`,
-  `M${SCREEN.x} ${SCREEN.y}V${SCREEN.y + SCREEN.h}H${SCREEN.x + SCREEN.w}V${SCREEN.y}Z`,
+  screenPath("main"),
+  screenPath("second"),
+  screenPath("laptop"),
 ].join(" ");
 
 function Tint({ name }: { name: "dawn" | "golden" | "night" | "error" }) {

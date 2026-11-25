@@ -4,7 +4,7 @@ import { exitCopy, revealCopy } from "../copy";
 import { fadeTo, flash, shake } from "../fx";
 import type { ActContext } from "../master";
 import { express, poseTo, walk } from "../rig";
-import { canAppears, screen } from "./shared";
+import { canAppears, screens } from "./shared";
 
 /**
  * 0.66-0.80, 6:00 to 11:00 PM. The build fails at 6 PM: hands on head,
@@ -17,8 +17,7 @@ export function bug({ tl, el, q, copy, rig, reduce }: ActContext) {
   const fail = 0.628;
   poseTo(tl, rig, "leanBack", fail - 0.014, 0.016);
   express(tl, rig, { mouth: "o" }, fail);
-  screen(tl, el, "code", fail, false, 0.004);
-  screen(tl, el, "error", fail, true, 0.004);
+  screens(tl, q, fail, "error", "error", "error");
 
   flash(tl, el("tint-error"), fail, 0.011, 0.6);
   flash(tl, el("tint-error"), fail + 0.008, 0.01, 0.45);
@@ -55,8 +54,7 @@ export function bug({ tl, el, q, copy, rig, reduce }: ActContext) {
   // Fix pushed; get up and head for the fridge.
   express(tl, rig, { mouth: "flat" }, 0.711);
   poseTo(tl, rig, { ...POSES.stand, x: 640 }, 0.706, 0.014);
-  screen(tl, el, "error", 0.72, false);
-  screen(tl, el, "code", 0.72, true);
+  screens(tl, q, 0.72, "code", "terminal", "browser");
   walk(tl, rig, 640, POSES.atFridge.x, 0.72, 0.07);
   poseTo(tl, rig, "atFridge", 0.79, 0.008);
 

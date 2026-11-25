@@ -4,7 +4,7 @@ import { revealCopy } from "../copy";
 import { fadeTo, flash } from "../fx";
 import type { ActContext } from "../master";
 import { express, poseTo, scale } from "../rig";
-import { canAppears, screen } from "./shared";
+import { canAppears, screens } from "./shared";
 
 /**
  * 0.92-1.00, 2:30 to 3:00 AM. Deploy, success, arms up.
@@ -14,12 +14,11 @@ import { canAppears, screen } from "./shared";
 export function deploy({ tl, el, q, copy, rig }: ActContext) {
   const success = MOMENTS.deploySuccess;
   canAppears(tl, q, 3, 0.935);
-
-  screen(tl, el, "code", 0.935, false, 0.003);
-  screen(tl, el, "deploy", 0.935, true, 0.003);
-  tl.fromTo(el("deploy-bar"), scale(0.02, 1), { ...scale(1, 1), duration: success - 0.939, ease: "power1.inOut" }, 0.937);
-  screen(tl, el, "deploy", success, false, 0.003);
-  screen(tl, el, "success", success, true, 0.003);
+  screens(tl, q, 0.935, "deploy", "deploy", "deploy");
+  q('[data-el$="-deploy-bar"]').forEach((bar) =>
+    tl.fromTo(bar, scale(0.02, 1), { ...scale(1, 1), duration: success - 0.939, ease: "power1.inOut" }, 0.937),
+  );
+  screens(tl, q, success, "success", "success", "success");
 
   flash(tl, el("success-flash"), success, 0.025, 0.95);
   fadeTo(tl, el("success-flash"), success + 0.026, 0.006, 0.35);
