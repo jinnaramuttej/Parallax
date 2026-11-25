@@ -25,6 +25,16 @@ import {
   type SecondState,
 } from "@/scene/screens/Screens";
 import { AnimeVideo } from "@/scene/screens/AnimeVideo";
+import { Can, CanStack, DeskCan, type DeskCanState } from "@/scene/props/Cans";
+import { Fridge, type FridgeState } from "@/scene/room/Fridge";
+import { BeanBag } from "@/scene/room/life/BeanBag";
+import { CoffeeShelf } from "@/scene/room/life/CoffeeShelf";
+import { Dust } from "@/scene/room/life/Dust";
+import { StringLights, StringLightsGlow } from "@/scene/room/life/StringLights";
+import { WallClock } from "@/scene/room/life/WallClock";
+import { TODO_ITEMS, Whiteboard } from "@/scene/room/life/Whiteboard";
+import { Posters, PostersGlow, type ShipPosterState } from "@/scene/room/Posters";
+import { CurtainFlare, CurtainTop } from "@/scene/room/Window";
 import { MovieVideo } from "@/scene/screens/MovieVideo";
 
 export const metadata: Metadata = {
@@ -136,6 +146,98 @@ export default function Gallery() {
           <Card key={pose} title={`cat: ${pose}`} viewBox="-60 -72 120 82" width={200}>
             <rect x="-60" y="0" width="120" height="10" fill="var(--floor)" />
             <CatRig which={`gallery-${pose}`} pose={pose} />
+          </Card>
+        ))}
+      </Section>
+
+
+      <Section title="Room life">
+        <Card title="coffee shelf" viewBox="1330 196 176 96" width={260}>
+          <CoffeeShelf />
+        </Card>
+        <Card title="bean bag" viewBox="1110 680 210 100" width={260}>
+          <BeanBag />
+        </Card>
+        {[0, TODO_ITEMS.length].map((n) => (
+          <Card key={n} title={`whiteboard: ${n} ticked`} viewBox="108 140 260 194" width={260}>
+            <Whiteboard ticked={n} />
+          </Card>
+        ))}
+        <Card title="curtain (top + swaying flare)" viewBox="396 36 132 540" width={100}>
+          <CurtainTop />
+          <CurtainFlare />
+        </Card>
+        {(["todo", "done"] as ShipPosterState[]).map((s) => (
+          <Card key={s} title={`poster: ${s}`} viewBox="1166 330 140 156" width={160}>
+            <Posters ship={s} />
+          </Card>
+        ))}
+      </Section>
+
+      <Section title="Lit at night (HTML / glow layer)">
+        {[359, 1380, 1620].map((m) => (
+          <figure key={m} className="m-0 rounded-xl bg-[var(--wall)] p-2 text-[var(--ink)]" data-card={`clock ${m}`}>
+            <div className="relative rounded-lg bg-[var(--wall-shade)]" style={{ width: 120, height: 120 }}>
+              <div className="absolute inset-0" style={{ width: 1600 * 1.364, height: 900 * 1.364, left: -1214 * 1.364, top: -120 * 1.364 }}>
+                <WallClock minutes={m} />
+              </div>
+            </div>
+            <figcaption className="mt-1 font-mono text-xs">
+              clock {Math.floor(m / 60) % 24}:{String(m % 60).padStart(2, "0")}
+            </figcaption>
+          </figure>
+        ))}
+        <figure className="m-0 rounded-xl bg-[var(--wall)] p-2 text-[var(--ink)]" data-card="string lights">
+          <div className="relative overflow-hidden rounded-lg bg-[var(--tint-night)]" style={{ width: 640, height: 60 }}>
+            <svg viewBox="40 10 1520 70" width={640} height={30} className="absolute left-0 top-0">
+              <StringLights />
+            </svg>
+            <div className="absolute left-0" style={{ top: 30, width: 640, height: 30 }}>
+              <svg viewBox="40 10 1520 70" width={640} height={30} className="absolute" style={{ mixBlendMode: "screen" }}>
+                <StringLights />
+              </svg>
+              <div className="absolute" style={{ width: 1600 * 0.421, height: 900 * 0.421, left: -40 * 0.421, top: -10 * 0.421 }}>
+                <StringLightsGlow />
+              </div>
+            </div>
+          </div>
+          <figcaption className="mt-1 font-mono text-xs">string lights: off (top), on (bottom)</figcaption>
+        </figure>
+        <figure className="m-0 rounded-xl bg-[var(--wall)] p-2 text-[var(--ink)]" data-card="posters glow">
+          <svg viewBox="80 330 1240 190" width={620} height={95} className="block rounded-lg bg-[var(--tint-night)]">
+            <Posters />
+          </svg>
+          <div className="relative overflow-hidden rounded-lg bg-[var(--sky-night-1)]" style={{ width: 620, height: 95 }}>
+            <div className="absolute" style={{ width: 1600 * 0.5, height: 900 * 0.5, left: -80 * 0.5, top: -330 * 0.5 }}>
+              <PostersGlow />
+            </div>
+          </div>
+          <figcaption className="mt-1 font-mono text-xs">posters: night glow paint</figcaption>
+        </figure>
+        <figure className="m-0 rounded-xl bg-[var(--wall)] p-2 text-[var(--ink)]" data-card="dust">
+          <div className="relative overflow-hidden rounded-lg" style={{ width: 300, height: 249, background: "var(--sun)", ["--s" as string]: 0.3 }}>
+            <Dust seed={11} clip="polygon(0% 0%, 64% 0%, 64% 48.2%, 100% 100%, 38% 100%, 0% 48.2%)" />
+          </div>
+          <figcaption className="mt-1 font-mono text-xs">dust motes in the morning beam</figcaption>
+        </figure>
+      </Section>
+
+      <Section title="Cans and fridge">
+        <Card title="can (own logo)" viewBox="-6 -4 32 42" width={90}>
+          <Can />
+        </Card>
+        {(["upright", "spill"] as DeskCanState[]).map((s) => (
+          <Card key={s} title={`desk can: ${s}`} viewBox="846 556 120 56" width={200}>
+            <rect x="846" y="604" width="120" height="10" fill="var(--wood)" />
+            <DeskCan state={s} />
+          </Card>
+        ))}
+        <Card title="can stack" viewBox="1190 490 90 120" width={120}>
+          <CanStack />
+        </Card>
+        {(["closed", "open"] as FridgeState[]).map((s) => (
+          <Card key={s} title={`fridge: ${s}`} viewBox="1230 280 290 490" width={190}>
+            <Fridge state={s} />
           </Card>
         ))}
       </Section>
