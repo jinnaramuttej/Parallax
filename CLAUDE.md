@@ -2,17 +2,17 @@
 
 # 24 Hours of a Dev
 
-Scroll-driven parallax site. Scroll position = time of day, from 5:59 AM to 3 AM.
+Scroll-driven (or autoplayed) parallax comic. Scroll position = time of day, from 5:59 AM to 3 AM.
 Flat-vector inline SVG art. Layers, back to front: sky, skyline, room, foreground, each at its own speed.
+A dev and his cat; comic captions; voice lines in speech balloons; synthesised sound.
 
-## Stops
+## Acts (src/config/acts.ts)
 
-0. 5:59 AM: alarm
-1. 6–9 AM: wake up + coffee
-2. 1 PM: deep focus
-3. 6 PM: golden hour + bug
-4. 11 PM: fridge run + moon
-5. 3 AM: deploy + confetti + stats finale
+0. 5:59 dark (cat asleep) · 1. 6:00 alarm (cat startles) · 2. 6:20 coffee (walk, sip) ·
+3. 7 AM boot (screens boot, close-up tour) · 4. 10 AM focus · 5. 12:30 break (the anime push-in,
+standup ping, whip pan; never call it anything else) · 6. 3 PM multitask (movie on the second screen) ·
+7. 6 PM bug (cat on the keyboard, error flood, fix) · 8. 11 PM fridge · 9. 3 AM deploy (cat on his
+shoulder, confetti, stats finale). Boot, break, multitask and bug get at least 120vh of scroll.
 
 ## Rules
 
@@ -36,10 +36,11 @@ Flat-vector inline SVG art. Layers, back to front: sky, skyline, room, foregroun
 ## Director model (config is the source of truth)
 
 - `src/config/timeMap.ts`: TIME MAP, `[progress, "HH:MM"]` keys with monotone cubic easing. `timeAt(progress)` is the only clock: HUD, sky, sun/moon, skyline windows, room light and clouds all read it, never raw scroll. Dependency-free so Node scripts can import it.
-- `src/config/acts.ts`: the seven acts (5:59, 6:00 wake, 7:00 desk, 1 PM, 6 PM, 11 PM, 3 AM): start/end progress, chip anchor, clock range, linger span, camera (shot, focus, arrive window), voice/caption/sfx ids, counter events; plus `MOMENTS` (deploy success, fridge door). Acts start on time-map keys, so chips land on their label's time. Scroll, HUD chips and counters, camera, captions, confetti and fridge clicks read it; autoplay and audio should too.
-- `src/config/shots.ts`: camera shot presets (wide, pushIn, whipPan, orbit, split). New camera moves are config edits.
-- `src/config/captions.ts`: sticky-note copy by caption id.
-- `src/config/scroll.ts`: scroll to day progress. Track is `SCROLL_VH` (1100) + 100 = 1200vh. Inside each act's linger span the day advances `LINGER`x slower (smooth ramps); every act must get at least `MIN_ACT_VH` of scroll.
+- `src/config/acts.ts`: the ten acts: start/end progress, chip label and anchor, clock range, linger span, camera (shot, focus, arrive window, `moves` beats incl. whip pans), voice line id, counter events; plus `MOMENTS` (deploy success, fridge door, standup ping). Acts start on time-map keys, so chips land on their label's time. Scroll, HUD chips and counters, camera, captions, audio, autoplay, confetti and fridge clicks read it.
+- `src/config/shots.ts`: camera shot presets (wide, follow, pushIn, whipPan, orbit, split). New camera moves are config edits.
+- `src/config/captions.ts`: comic captions (impact words, boxes, balloons): text, type, zones, tilt, size, enter/exit, entrance. Safe zones per act.
+- `src/config/voice.ts`: voice lines (text, `/audio/voice/<id>.mp3`, balloon id, trigger). `src/config/sfx.ts`: synth sound cues, hum span, typing spans.
+- `src/config/scroll.ts`: scroll to day progress. Track is `SCROLL_VH` (1300) + 100 = 1400vh. Inside each act's linger span the day advances `LINGER`x slower (smooth ramps); every act must get at least `MIN_ACT_VH` of scroll.
 
 ## Scene engine
 
@@ -50,15 +51,26 @@ Flat-vector inline SVG art. Layers, back to front: sky, skyline, room, foregroun
 - Scene art uses a 1600x900 design canvas. `.scene-canvas` sizes it from `--s` (set in `src/scene/viewport.ts`); children use `box(x, y, w, h)` in canvas units.
 - SVG joints and props are tweened through their `transform` attribute (`rotate()`/`translate()` strings), not GSAP `svgOrigin` (that is in global SVG coordinates). `gsap.quickSetter` does not support the `scale` shorthand: set `scaleX` and `scaleY`.
 
+## Systems
+
+- Room art: `src/scene/room/` (furniture, `desk/`, `life/`), screens in `src/scene/screens/` (main, second, laptop states; original anime and movie clips). Props are data-driven: `StatefulG`/`StatefulDiv` (`src/scene/Stateful.tsx`) render every state, `setState(tl, q, prop, state, at)` crossfades them. Every prop and state: `/dev/gallery` (dev only).
+- The cat: `src/scene/character/Cat.tsx` + `catPoses.ts`, driven by `src/scene/timeline/catRig.ts` (catPose, catWalk, catJump; tail/ear idle loops on real time).
+- Captions: `src/components/ComicCaption.tsx` (layers), `src/scene/timeline/captions.ts` (scrubbed entrances, placement clear of `[data-face]`, `[data-screen-rect]` and HUD, `showBalloon(id)`, D = debug zones).
+- Audio: `src/audio/` (AudioManager singleton, synth effects and lo-fi loop, director syncing voice lines and cues to the day, SoundButton). Sound is off until a gesture; voice mp3s found at build time by `src/app/page.tsx`, else speech synthesis.
+- Autoplay: `src/autoplay/` (director drives Lenis `scrollTo` from a GSAP tween, stops at voice lines; Intro card, HUD transport). `src/scene/navigate.ts` holds scroll helpers.
+- Moving pieces that change every frame live in their own small layers (wall clock hands in `RoomLife`, curtain flares in `Curtains`) so the big room SVG never repaints.
+
 ## Gotchas
 
-- Dev server: edits to `globals.css` are sometimes not hot-reloaded (stale stylesheet, no error). Restart the dev server after CSS changes before judging screenshots.
+- Dev server: edits to `globals.css` are sometimes not hot-reloaded (stale stylesheet, no error). Restart the dev server after CSS changes before judging screenshots; if new rules are still missing, delete `.next` (Turbopack's persistent cache) and restart.
+- `getBoundingClientRect` ignores clip paths: measure `[data-screen-rect]` for a screen and `[data-face]` for his face, not the groups.
+- `gsap.quickSetter(el, "rotation")` needs the `"deg"` unit or it writes invalid CSS silently.
 - Scripts read `URL` (the dev server runs on :3000).
 
 ## Commands
 
 - `npm run dev` / `npm run build` / `npm run lint`
 - Dev server for the preview pane: `.claude/launch.json` (`next-dev`)
-- Checks (Playwright on the installed Chrome): `node scripts/verify-time.mjs --step 2` (clock vs time map, act starts, chip jumps), `node scripts/shoot.mjs --mode stops|percent [--viewport mobile] [--reduce]`, `scripts/strip.mjs` (filmstrip), `scripts/audit-layout.mjs`, `scripts/motion.mjs`, `scripts/perf.mjs [--dpr 2]`, `scripts/sync.mjs`, `scripts/net.mjs`. `bash scripts/serve-prod.sh` serves a production build on :3100 for perf runs.
+- Checks (Playwright on the installed Chrome): `node scripts/verify-time.mjs --step 2` (clock vs time map, act starts, chip jumps), `node scripts/act-frames.mjs` (5 frames per act + vh per act), `node scripts/captions.mjs [dir] [mobile]` (caption overlaps), `node scripts/audio.mjs`, `node scripts/autoplay.mjs [--quick]`, `node scripts/reduced.mjs`, `node scripts/gallery.mjs`, `node scripts/capdebug.mjs <progress> <out>`, `node scripts/shoot.mjs --mode stops|percent [--viewport mobile] [--reduce]`, `scripts/strip.mjs` (filmstrip), `scripts/audit-layout.mjs`, `scripts/motion.mjs`, `scripts/perf.mjs [--dpr 2]`, `scripts/sync.mjs`, `scripts/net.mjs`. `bash scripts/serve-prod.sh` serves a production build on :3100 for perf runs.
 - Deploy: `npx vercel deploy --prod` (folder is linked to Vercel project `parallax`; no Git integration yet)
 - Live: https://parallax-three-chi.vercel.app

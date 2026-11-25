@@ -16,6 +16,8 @@ npm run dev        # http://localhost:3000
 npm run build && npm start
 ```
 
+Press **Play the day** to watch it as an autoplayed short (about two and a half minutes), or just scroll. Keys: space plays and pauses, left and right arrows jump to the previous and next act, D shows the caption safe zones. Any scroll pauses autoplay; Resume picks up where you are.
+
 `/dev/gallery` (development only) shows every prop in every state.
 
 ## How it works
@@ -48,4 +50,5 @@ Scripts in `scripts/` drive the installed Chrome with Playwright against a runni
 - `act-frames.mjs`: five frames per act and each act's scroll length
 - `captions.mjs`: every caption and balloon, with overlap checks against face, screens and HUD
 - `audio.mjs`: audio locked by default, unlock, voice sync and fallbacks, no console errors
+- `autoplay.mjs`: plays the whole day; total duration, pause and resume, cut-off voice lines, console errors
 - `motion.mjs`, `perf.mjs`, `audit-layout.mjs`, `gallery.mjs`: motion steps, performance traces, layout, prop gallery

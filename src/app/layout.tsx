@@ -28,7 +28,7 @@ const hand = Patrick_Hand({
 });
 
 const description =
-  "Scroll through one developer's day, from the 5:59 AM alarm to a 3 AM deploy. A flat-vector parallax story built with Next.js, GSAP and Lenis.";
+  "One developer (and his cat), one day, ten acts: from the 5:59 AM alarm to a 3 AM deploy. Scroll it or press play. A flat-vector parallax comic with sound, built with Next.js, GSAP and Lenis.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://parallax-three-chi.vercel.app"),
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   description,
   applicationName: "24 Hours of a Dev",
   authors: [{ name: "jinnaramuttej", url: "https://github.com/jinnaramuttej" }],
-  keywords: ["parallax", "scroll animation", "GSAP", "ScrollTrigger", "Lenis", "Next.js", "SVG"],
+  keywords: ["parallax", "scroll animation", "scrollytelling", "GSAP", "ScrollTrigger", "Lenis", "Next.js", "SVG", "Web Audio"],
   openGraph: {
     type: "website",
     url: "/",

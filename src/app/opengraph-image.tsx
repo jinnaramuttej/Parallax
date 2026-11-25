@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "24 Hours of a Dev: a scroll-driven parallax day in the life of a developer";
+export const alt = "24 Hours of a Dev: a developer's day (and his cat's) in ten scroll-driven acts";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -34,6 +34,7 @@ export default function Image() {
           <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1 }}>24 Hours</div>
           <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1 }}>of a Dev</div>
           <div style={{ marginTop: 22, fontSize: 30 }}>5:59 AM alarm to 3 AM deploy</div>
+          <div style={{ marginTop: 8, fontSize: 26 }}>Ten acts, one cat. Scroll or press play.</div>
         </div>
         <div
           style={{
