@@ -27,6 +27,9 @@ import { Camera } from "./Camera";
 import { buildMasterTimeline } from "./timeline/master";
 import { Hud } from "./ui/Hud";
 import { ComicCaptionLayers } from "@/components/ComicCaption";
+import { audio } from "@/audio/AudioManager";
+import { startAudioDirector } from "@/audio/director";
+import { SoundButton } from "@/audio/SoundButton";
 import { setupInteractions } from "./interactions";
 import { Confetti } from "./ui/Confetti";
 import { Hotspots } from "./ui/Hotspots";
@@ -50,7 +53,8 @@ declare global {
   }
 }
 
-export function Scene() {
+/** `voiceFiles`: recorded voice lines found in public/audio/voice at build time. */
+export function Scene({ voiceFiles = [] }: { voiceFiles?: string[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +83,8 @@ export function Scene() {
     );
 
     const stopInteractions = setupInteractions(stage);
+    audio().setVoiceFiles(voiceFiles);
+    const stopAudio = startAudioDirector();
     window.__director = Object.freeze({
       acts: ACTS.map(
         ({ id, label, startProgress, endProgress, anchor, clock }) => ({
@@ -98,11 +104,12 @@ export function Scene() {
     });
 
     return () => {
+      stopAudio();
       stopInteractions();
       mm.revert();
       ScrollTrigger.removeEventListener("refreshInit", onRefreshInit);
     };
-  }, []);
+  }, [voiceFiles]);
 
   return (
     <section
@@ -142,6 +149,7 @@ export function Scene() {
         <Toast />
       </div>
       <Hud />
+      <SoundButton />
       <Scrubber />
       <ScrollHint />
       <Confetti />

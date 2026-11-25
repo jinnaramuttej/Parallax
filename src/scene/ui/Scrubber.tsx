@@ -5,6 +5,7 @@ import { useLenis } from "@/components/SmoothScroll";
 import { ACTS, actAt } from "@/config/acts";
 import { scrollFromProgress } from "@/config/scroll";
 import { dayStore } from "../dayStore";
+import { audio } from "@/audio/AudioManager";
 
 /** "6:00 wake" -> time "6:00" (always shown) + word "wake" (hidden on phones). */
 function chipParts(label: string) {
@@ -44,6 +45,7 @@ export function Scrubber() {
   }, []);
 
   const go = (i: number) => {
+    audio().sfx("click");
     const y = scrollYForProgress(ACTS[i].anchor);
     if (lenis) {
       const distance = Math.abs(y - window.scrollY);
