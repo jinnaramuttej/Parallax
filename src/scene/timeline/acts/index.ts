@@ -11,19 +11,16 @@ import { focus } from "./focus";
 import { fridge } from "./fridge";
 import { multitask } from "./multitask";
 
-/** Acts not choreographed yet. */
-const pending = () => {};
-
 /** Choreography per act id (timing and framing come from src/config/acts.ts). */
 export const ACT_BUILDERS: Record<ActId, (ctx: ActContext) => void> = {
-  dark: dark,
-  alarm: alarm,
-  coffee: coffee,
-  boot: boot,
-  focus: focus,
+  dark,
+  alarm,
+  coffee,
+  boot,
+  focus,
   break: breakAct,
-  multitask: multitask,
-  bug: bug,
-  fridge: fridge,
-  deploy: deploy,
+  multitask,
+  bug,
+  fridge,
+  deploy,
 };
