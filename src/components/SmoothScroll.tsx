@@ -20,6 +20,11 @@ function subscribe(notify: () => void) {
   return () => listeners.delete(notify);
 }
 
+/** The Lenis instance outside React (null with reduced motion or before mount). */
+export function getLenis() {
+  return current;
+}
+
 export function useLenis() {
   return useSyncExternalStore(
     subscribe,

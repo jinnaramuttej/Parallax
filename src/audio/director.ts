@@ -34,6 +34,13 @@ declare global {
   }
 }
 
+let busy: () => boolean = () => false;
+
+/** True while a voice line is playing or queued (autoplay waits for it). */
+export function voiceBusy() {
+  return busy();
+}
+
 /**
  * Keeps sound in sync with the day: voice lines fire once per pass when the
  * scroll enters their trigger (queued, never overlapping; skipped when the
@@ -122,6 +129,7 @@ export function startAudioDirector() {
   }
 
   const off = dayStore.subscribe(onProgress);
+  busy = () => playing !== null || queue.length > 0;
   window.__audio = {
     state: () => ({ unlocked: a.unlocked, wantsSound: a.wantsSound, playing: playing?.id ?? null, queue: queue.map((q) => q.line.id) }),
     log,
@@ -129,6 +137,7 @@ export function startAudioDirector() {
   };
   return () => {
     off();
+    busy = () => false;
     playing?.stop();
     queue.length = 0;
     hideBalloon();

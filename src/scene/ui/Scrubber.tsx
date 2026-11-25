@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useLenis } from "@/components/SmoothScroll";
 import { ACTS, actAt } from "@/config/acts";
-import { scrollFromProgress } from "@/config/scroll";
 import { dayStore } from "../dayStore";
 import { audio } from "@/audio/AudioManager";
+import { pause } from "@/autoplay/autoplay";
+import { goToAct } from "../navigate";
 
 /** "6:00 wake" -> time "6:00" (always shown) + word "wake" (hidden on phones). */
 function chipParts(label: string) {
@@ -13,19 +13,8 @@ function chipParts(label: string) {
   return m ? { time: m[1], word: m[2] } : { time: label, word: "" };
 }
 
-const easeInOutCubic =(t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-
-/** Scroll position (px) at which the scene reaches a day progress. */
-export function scrollYForProgress(progress: number) {
-  const track = document.querySelector<HTMLElement>(".scene-track");
-  if (!track) return 0;
-  const top = track.getBoundingClientRect().top + window.scrollY;
-  return top + scrollFromProgress(progress) * (track.offsetHeight - window.innerHeight);
-}
-
 /** HUD chips: one per act (from src/config/acts.ts); the current act is highlighted. */
 export function Scrubber() {
-  const lenis = useLenis();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
@@ -46,13 +35,8 @@ export function Scrubber() {
 
   const go = (i: number) => {
     audio().sfx("click");
-    const y = scrollYForProgress(ACTS[i].anchor);
-    if (lenis) {
-      const distance = Math.abs(y - window.scrollY);
-      lenis.scrollTo(y, { duration: 1 + Math.min(2.6, distance / 4500), easing: easeInOutCubic });
-    } else {
-      window.scrollTo({ top: y });
-    }
+    pause(false);
+    goToAct(i);
   };
 
   return (
