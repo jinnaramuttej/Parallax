@@ -6,7 +6,8 @@ import { LIGHT_SCHEDULE } from "../layers/Skyline";
 
 /**
  * Everything that is a pure function of the clock: sky colour, sun and
- * moon, stars, cloud drift, skyline night tint and window lights.
+ * moon, stars, cloud drift, skyline night tint, window lights, room light
+ * (incl. string lights) and the wall clock.
  * Applied from the master timeline's onUpdate.
  */
 
@@ -63,6 +64,8 @@ const ROOM_LIGHT: Record<string, Key[]> = {
   "--golden": [[990, 0], [1045, 0.5], [1095, 0.6], [1150, 0.1], [1180, 0]],
   "--lamp": [[1090, 0], [1130, 1]],
   "--glow": [[1100, 0], [1220, 0.85]],
+  // String lights: switched on around 11 PM.
+  "--lights": [[1366, 0], [1384, 1]],
 };
 const SUNRISE = 360;
 const SUNSET = 1170;
@@ -79,10 +82,11 @@ export function createWorld(stage: HTMLElement) {
   const q = gsap.utils.selector(stage);
   const cache = new Map<string, number>();
 
-  // Only touch the DOM when a value actually changes.
-  function setter(el: Element | undefined, prop: string, key: string) {
+  // Only touch the DOM when a value actually changes. Rotations need an
+  // explicit "deg" unit: without one quickSetter writes invalid CSS.
+  function setter(el: Element | undefined, prop: string, key: string, unit?: string) {
     if (!el) return () => {};
-    const set = gsap.quickSetter(el, prop) as (v: number) => void;
+    const set = gsap.quickSetter(el, prop, unit) as (v: number) => void;
     return (v: number) => {
       const rounded = Math.round(v * 1000) / 1000;
       if (cache.get(key) === rounded) return;
@@ -127,6 +131,10 @@ export function createWorld(stage: HTMLElement) {
     return { group, set: setter(el, "opacity", `lights-${i}`) };
   });
 
+  // Wall clock hands (HTML boxes, rotation only) follow the same clock as the HUD.
+  const hourHand = setter(q('[data-el="clock-hour"]')[0], "rotation", "clock-hour", "deg");
+  const minuteHand = setter(q('[data-el="clock-minute"]')[0], "rotation", "clock-minute", "deg");
+
   function arc(angle: number, size: number) {
     const dx = ARC.rx * Math.cos(angle);
     const dy = -ARC.ry * Math.sin(angle);
@@ -153,6 +161,9 @@ export function createWorld(stage: HTMLElement) {
     });
 
     stars(curve(STARS, t));
+
+    minuteHand((t % 60) * 6);
+    hourHand(((t / 60) % 12) * 30);
 
     // Sun: rises at SUNRISE on the left, sets at SUNSET on the right.
     const sunA = Math.PI * (1 - (t - SUNRISE) / (SUNSET - SUNRISE));

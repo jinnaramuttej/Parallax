@@ -1,6 +1,7 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { screenPath } from "../room/layout";
 import { WINDOW } from "../room/Wall";
+import { Dust } from "../room/life/Dust";
 import { box } from "../viewport";
 
 // Everything except the window (the sky has its own colours) and the
@@ -45,11 +46,13 @@ export function Tints() {
         <svg viewBox="480 70 1000 830" preserveAspectRatio="none">
           <path d="M480 70H1120V470L1480 900H860L480 470Z" fill="var(--sun)" />
         </svg>
+        <Dust seed={11} clip="polygon(0% 0%, 64% 0%, 64% 48.2%, 100% 100%, 38% 100%, 0% 48.2%)" />
       </div>
       <div className="golden-beam" data-el="beam-evening" style={box(140, 70, 1000, 830)}>
         <svg viewBox="140 70 1000 830" preserveAspectRatio="none">
           <path d="M480 70H1120V470L900 900H140L480 470Z" fill="var(--sun)" />
         </svg>
+        <Dust seed={23} clip="polygon(34% 0%, 98% 0%, 98% 48.2%, 76% 100%, 0% 100%, 34% 48.2%)" />
       </div>
     </ParallaxLayer>
   );

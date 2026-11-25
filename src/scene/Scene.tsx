@@ -14,7 +14,9 @@ import { Glows } from "./layers/Glows";
 import { MonitorScreen } from "./layers/MonitorScreen";
 import { Tints } from "./layers/Tints";
 import { Props } from "./props/Props";
-import { Room } from "./room/Room";
+import { Room, RoomBack } from "./room/Room";
+import { Curtains } from "./layers/Curtains";
+import { RoomLife } from "./layers/RoomLife";
 import { Clouds } from "./layers/Clouds";
 import { Sky } from "./layers/Sky";
 import { Skyline } from "./layers/Skyline";
@@ -114,7 +116,10 @@ export function Scene() {
             <Celestial />
             <Clouds />
             <Skyline />
+            <RoomBack />
+            <Curtains />
             <Room />
+            <RoomLife />
             <MonitorScreen />
             <Character />
             <Props />

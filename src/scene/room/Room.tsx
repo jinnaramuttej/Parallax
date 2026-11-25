@@ -16,14 +16,31 @@ import { SecondMonitor } from "./desk/SecondMonitor";
 import { Posters } from "./Posters";
 import { Wall } from "./Wall";
 import { Window } from "./Window";
+import { BeanBag } from "./life/BeanBag";
+import { CoffeeShelf } from "./life/CoffeeShelf";
+import { StringLights } from "./life/StringLights";
+import { Whiteboard } from "./life/Whiteboard";
 
-/** The room plane (speed 1). The skyline shows through the window cut-out. */
-export function Room() {
+/** Back of the room plane (speed 1): wall and window. The skyline shows through the cut-out. */
+export function RoomBack() {
   return (
     <ParallaxLayer speed={1} className="scene-canvas" aria-hidden>
       <svg viewBox="0 0 1600 900">
         <Wall />
         <Window />
+      </svg>
+    </ParallaxLayer>
+  );
+}
+
+/** The room plane (speed 1) in front of the curtains: furniture, desk setup, room life. */
+export function Room() {
+  return (
+    <ParallaxLayer speed={1} className="scene-canvas" aria-hidden>
+      <svg viewBox="0 0 1600 900">
+        <StringLights />
+        <Whiteboard />
+        <CoffeeShelf />
         <Posters />
         <Bed />
         <Fridge />
@@ -40,6 +57,7 @@ export function Room() {
         <DeskPlant />
         <Laptop />
         <HeadphoneStand />
+        <BeanBag />
         <Chair />
       </svg>
     </ParallaxLayer>

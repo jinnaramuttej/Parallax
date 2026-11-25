@@ -1,10 +1,13 @@
 import { ParallaxLayer } from "@/components/ParallaxLayer";
 import { RgbStrip } from "../room/desk/RgbStrip";
+import { StringLightsGlow } from "../room/life/StringLights";
+import { PostersGlow } from "../room/Posters";
 import { box } from "../viewport";
 
 /**
  * Light sources drawn above the tints with a screen blend: desk lamp,
- * monitor glow, fridge light spill. Opacity only.
+ * string lights, glow-in-the-dark poster paint, monitor glow, fridge
+ * light spill. Opacity only.
  */
 export function Glows() {
   return (
@@ -15,6 +18,12 @@ export function Glows() {
       aria-hidden
     >
       <div className="glow glow-lamp" style={box(940, 400, 320, 280)} />
+      <div className="glow-lights" data-el="string-lights-glow">
+        <StringLightsGlow />
+      </div>
+      <div className="glow-posters">
+        <PostersGlow />
+      </div>
       <div className="glow-rgb">
         <RgbStrip state="cyan" />
       </div>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, JetBrains_Mono } from "next/font/google";
+import { Bangers, Bricolage_Grotesque, JetBrains_Mono, Patrick_Hand } from "next/font/google";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
@@ -11,6 +11,19 @@ const display = Bricolage_Grotesque({
 
 const mono = JetBrains_Mono({
   variable: "--font-jetbrains",
+  subsets: ["latin"],
+});
+
+/** Comic lettering: impact words (Bangers) and hand-lettered balloons and boards (Patrick Hand). */
+const impact = Bangers({
+  variable: "--font-bangers",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const hand = Patrick_Hand({
+  variable: "--font-hand",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -45,7 +58,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${display.variable} ${mono.variable} antialiased`}>
+    <html lang="en" className={`${display.variable} ${mono.variable} ${impact.variable} ${hand.variable} antialiased`}>
       <body>
         <SmoothScroll>{children}</SmoothScroll>
       </body>

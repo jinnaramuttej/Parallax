@@ -1,7 +1,15 @@
+import { StatefulG } from "../Stateful";
+
 const mono = { fontFamily: "var(--font-jetbrains), monospace" };
 
-/** Three wall posters: curly braces, a rocket, and a git graph. */
-export function Posters() {
+export type ShipPosterState = "todo" | "done";
+
+/**
+ * Three wall posters: curly braces, a rocket, and a git graph whose caption
+ * flips from "ship it" to "shipped" at the deploy (prop "poster-ship").
+ * At night their glow-in-the-dark paint shows (PostersGlow, glow layer).
+ */
+export function Posters({ ship = "todo" }: { ship?: ShipPosterState }) {
   return (
     <g>
       <g transform="rotate(-3 145 435)">
@@ -78,19 +86,56 @@ export function Posters() {
         <circle cx="1206" cy="406" r="8" fill="var(--sun)" />
         <circle cx="1260" cy="426" r="8" fill="var(--accent)" />
         <circle cx="1206" cy="450" r="9" fill="var(--can)" />
-        <text
-          x="1236"
-          y="470"
-          textAnchor="middle"
-          fontSize="12"
-          fontWeight="700"
-          fill="var(--paper)"
-          style={mono}
-        >
-          ship it
-        </text>
+        <StatefulG<ShipPosterState>
+          id="poster-ship"
+          state={ship}
+          states={{
+            todo: (
+              <text x="1236" y="470" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--paper)" style={mono}>
+                ship it
+              </text>
+            ),
+            done: (
+              <text x="1236" y="470" textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--can)" style={mono}>
+                shipped ✓
+              </text>
+            ),
+          }}
+        />
         <circle cx="1236" cy="350" r="5" fill="var(--error)" />
       </g>
     </g>
+  );
+}
+
+const STAR = "M0 -6L1.6 -1.6L6 0L1.6 1.6L0 6L-1.6 1.6L-6 0L-1.6 -1.6Z";
+
+/** Glow-in-the-dark paint on the posters; its layer fades in with --night. */
+export function PostersGlow() {
+  const star = (x: number, y: number, s = 1) => (
+    <path key={`${x}-${y}`} d={STAR} transform={`translate(${x} ${y}) scale(${s})`} fill="var(--can)" />
+  );
+  return (
+    <svg viewBox="0 0 1600 900" aria-hidden>
+      <g transform="rotate(-3 145 435)">
+        <rect x="90" y="360" width="110" height="150" rx="4" fill="none" stroke="var(--can)" strokeWidth="2.5" opacity="0.7" />
+        {star(106, 382, 0.8)}
+        {star(186, 496, 0.9)}
+      </g>
+      <g transform="rotate(4 278 435)">
+        {star(244, 400)}
+        {star(314, 404, 0.8)}
+        {star(246, 472, 0.7)}
+        {star(312, 476, 1.1)}
+        {star(302, 424, 0.6)}
+        <path d="M298 444C290 444 286 438 288 432C290 438 296 440 302 438C301 442 300 444 298 444Z" fill="var(--can)" />
+      </g>
+      <g transform="rotate(-2 1236 408)" fill="var(--can)">
+        <circle cx="1206" cy="368" r="10" opacity="0.6" />
+        <circle cx="1206" cy="406" r="10" opacity="0.6" />
+        <circle cx="1260" cy="426" r="10" opacity="0.6" />
+        <circle cx="1206" cy="450" r="11" opacity="0.8" />
+      </g>
+    </svg>
   );
 }
