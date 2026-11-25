@@ -25,6 +25,14 @@ export function SoundButton() {
       seen = localStorage.getItem(TIP_KEY) === "seen";
     } catch {}
     if (!seen && !audio().wantsSound && tip.current) tip.current.hidden = false;
+    // Sound turned on from anywhere (e.g. "Play the day"): the tip has done its job.
+    const offSound = audio().subscribe(() => {
+      if (!audio().wantsSound || !tip.current || tip.current.hidden) return;
+      tip.current.hidden = true;
+      try {
+        localStorage.setItem(TIP_KEY, "seen");
+      } catch {}
+    });
     // Any gesture unlocks audio for a visitor who chose sound on last time.
     const unlock = () => {
       if (audio().wantsSound) audio().unlock();
@@ -34,6 +42,7 @@ export function SoundButton() {
     window.addEventListener("keydown", unlock, opts);
     window.addEventListener("touchend", unlock, opts);
     return () => {
+      offSound();
       window.removeEventListener("pointerdown", unlock, opts);
       window.removeEventListener("keydown", unlock, opts);
       window.removeEventListener("touchend", unlock, opts);

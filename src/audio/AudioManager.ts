@@ -64,6 +64,12 @@ class AudioManager {
     this.files = new Set(files);
   }
 
+  /** Fetch the recorded voice lines into the cache (loading screen), at most `ms`. */
+  preloadVoice(files: string[], ms = 3000) {
+    const all = Promise.all(files.map((f) => fetch(f).then((r) => r.blob()).catch(() => null)));
+    return Promise.race([all, new Promise((r) => setTimeout(r, ms))]).then(() => undefined);
+  }
+
   /** Call from a user gesture (click, key, tap). Safe to call repeatedly. */
   unlock() {
     try {

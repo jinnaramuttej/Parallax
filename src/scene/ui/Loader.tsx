@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useLenis } from "@/components/SmoothScroll";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { audio } from "@/audio/AudioManager";
 import { AlarmClockShape } from "../props/AlarmClock";
 
 /** Fired on window once the loading screen has gone. */
@@ -10,9 +11,11 @@ export const READY_EVENT = "scene:ready";
 
 /**
  * Short loading screen with the ringing alarm clock. Holds the page at the
- * top until fonts are in (and at least ~0.9 s), then fades away.
+ * top until the fonts (incl. the comic lettering) and any recorded voice
+ * lines are in (at least ~0.9 s, at most a few seconds for audio), then
+ * fades away. The art is inline SVG, so it is already here.
  */
-export function Loader() {
+export function Loader({ voiceFiles = [] }: { voiceFiles?: string[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const done = useRef(false);
   const lenis = useLenis();
@@ -33,7 +36,7 @@ export function Loader() {
     window.scrollTo(0, 0);
     const minTime = new Promise((r) => setTimeout(r, 900));
     let cancelled = false;
-    Promise.all([document.fonts.ready, minTime]).then(() => {
+    Promise.all([document.fonts.ready, minTime, audio().preloadVoice(voiceFiles)]).then(() => {
       if (cancelled) return;
       done.current = true;
       lenisRef.current?.start();
@@ -52,7 +55,7 @@ export function Loader() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [voiceFiles]);
 
   return (
     <div ref={ref} className="loader" data-loader role="status" aria-live="polite">

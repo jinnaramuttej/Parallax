@@ -512,35 +512,6 @@ body {
   }
 }
 
-.scroll-hint {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 84px;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  margin: 0 auto;
-  width: max-content;
-  color: var(--paper);
-  font-size: 15px;
-  font-weight: 600;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-.scroll-hint span {
-  padding: 6px 14px;
-  border-radius: 99px;
-  background: rgb(31 27 61 / 0.86);
-}
-.scroll-hint-arrow {
-  width: 26px;
-  height: 26px;
-  animation: nudge 1.2s ease-in-out infinite;
-}
 @keyframes nudge {
   0%,
   100% {
@@ -788,9 +759,6 @@ body {
   .scrubber-word {
     display: none;
   }
-  .scroll-hint {
-    bottom: 72px;
-  }
   .terminal-body {
     font-size: 13px;
   }
@@ -798,7 +766,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .loader-clock,
-  .scroll-hint-arrow,
+  .intro-arrow,
   .t-caret {
     animation: none;
   }
@@ -1237,5 +1205,153 @@ body {
   .sound-btn[data-on="true"] .sound-wave i {
     animation: none;
     transform: scaleY(0.7);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Autoplay: intro card, transport button, day progress bar            */
+/* ------------------------------------------------------------------ */
+.intro {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(max(14px, env(safe-area-inset-bottom)) + 72px);
+  z-index: 29;
+  width: min(420px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 20px 22px 16px;
+  border-radius: 20px;
+  background: rgb(31 27 61 / 0.9);
+  color: var(--paper);
+  text-align: center;
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.35);
+}
+.intro-title {
+  margin: 0;
+  font: 400 clamp(2rem, 5vw, 2.6rem) / 1 var(--font-bangers), Impact, sans-serif;
+  letter-spacing: 0.03em;
+  color: var(--sun);
+  -webkit-text-stroke: 0.04em var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0.06em 0.06em 0 var(--ink);
+}
+.intro-sub {
+  margin: 6px 0 16px;
+  font: 400 1.15rem/1.2 var(--font-hand), "Comic Sans MS", cursive;
+  opacity: 0.9;
+}
+.intro-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 24px 13px 18px;
+  border: 0;
+  border-radius: 99px;
+  background: var(--sun);
+  color: var(--ink);
+  font: 700 1.05rem/1 var(--font-bricolage), system-ui, sans-serif;
+  box-shadow: 0 4px 0 var(--accent-dark);
+  cursor: pointer;
+}
+.intro-play svg {
+  width: 22px;
+  height: 22px;
+}
+.intro-play:hover {
+  background: var(--paper);
+}
+.intro-play:focus-visible,
+.autoplay-controls:focus-visible {
+  outline: 3px solid var(--sun);
+  outline-offset: 4px;
+}
+.intro-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 12px 0 0;
+  font: 500 0.85rem/1 var(--font-jetbrains), monospace;
+  opacity: 0.7;
+}
+.intro-arrow {
+  width: 18px;
+  height: 18px;
+  animation: hint-bob 1.6s ease-in-out infinite;
+}
+@keyframes hint-bob {
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+.autoplay-controls {
+  position: fixed;
+  left: 14px;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 18px 0 14px;
+  border: 0;
+  border-radius: 99px;
+  background: rgb(31 27 61 / 0.86);
+  color: var(--paper);
+  font: 600 14px/1 var(--font-bricolage), system-ui, sans-serif;
+  cursor: pointer;
+}
+.autoplay-controls[data-state="paused"],
+.autoplay-controls[data-state="idle"] {
+  background: var(--sun);
+  color: var(--ink);
+}
+.autoplay-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.day-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 32;
+  height: 3px;
+  background: rgb(31 27 61 / 0.5);
+  pointer-events: none;
+}
+.day-progress-fill {
+  height: 100%;
+  background: var(--sun);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+
+/* Phones: compact chips (dots, the current act labelled), transport above them. */
+@media (max-width: 640px) {
+  .scrubber-stop {
+    padding: 8px 7px;
+  }
+  .scrubber-stop:not([aria-current]) .scrubber-time {
+    display: none;
+  }
+  .scrubber-stop:not([aria-current]) .scrubber-dot {
+    display: block;
+  }
+  .autoplay-controls {
+    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 52px);
+    height: 40px;
+  }
+  .intro {
+    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 108px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-arrow {
+    animation: none;
   }
 }

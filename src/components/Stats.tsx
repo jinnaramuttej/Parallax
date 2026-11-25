@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef } from "react";
 import { ParallaxLayer } from "@/components/ParallaxLayer";
-import { useLenis } from "@/components/SmoothScroll";
+import { replay as replayDay } from "@/autoplay/autoplay";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { bonusCansStore } from "@/scene/dayStore";
 import { r1, seeded } from "@/scene/random";
@@ -30,13 +30,12 @@ const STARS = (() => {
  */
 export function Stats() {
   const ref = useRef<HTMLElement>(null);
-  const lenis = useLenis();
 
   useLayoutEffect(() => {
     const section = ref.current;
     if (!section) return;
     const numbers = Array.from(section.querySelectorAll<HTMLElement>("[data-count]"));
-    const chrome = () => Array.from(document.querySelectorAll(".hud, .scrubber"));
+    const chrome = () => Array.from(document.querySelectorAll(".hud, .scrubber, .day-progress, .autoplay-controls"));
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const target = (n: HTMLElement) =>
@@ -71,10 +70,8 @@ export function Stats() {
     return () => st.kill();
   }, []);
 
-  const replay = () => {
-    if (lenis) lenis.scrollTo(0, { duration: 3.2 });
-    else window.scrollTo({ top: 0 });
-  };
+  // Back to 5:59 AM and play the day again.
+  const replay = () => replayDay();
 
   return (
     <section ref={ref} className="stats" aria-labelledby="stats-title">

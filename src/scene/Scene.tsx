@@ -34,7 +34,8 @@ import { setupInteractions } from "./interactions";
 import { Confetti } from "./ui/Confetti";
 import { Hotspots } from "./ui/Hotspots";
 import { Loader } from "./ui/Loader";
-import { ScrollHint } from "./ui/ScrollHint";
+import { Intro } from "@/autoplay/Intro";
+import { AutoplayControls } from "@/autoplay/Controls";
 import { Scrubber } from "./ui/Scrubber";
 import { measureViewport } from "./viewport";
 import { ACTS } from "@/config/acts";
@@ -151,9 +152,10 @@ export function Scene({ voiceFiles = [] }: { voiceFiles?: string[] }) {
       <Hud />
       <SoundButton />
       <Scrubber />
-      <ScrollHint />
+      <Intro />
+      <AutoplayControls />
       <Confetti />
-      <Loader />
+      <Loader voiceFiles={voiceFiles} />
     </section>
   );
 }
