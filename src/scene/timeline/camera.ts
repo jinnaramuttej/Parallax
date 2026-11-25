@@ -22,24 +22,22 @@ export type CameraState = {
 };
 
 type Setter = (v: number) => void;
-type Transformable = { x: Setter; y: Setter; scale: Setter; scaleX: Setter; scaleY: Setter; rotation: Setter };
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+const r3 = (v: number) => Math.round(v * 1000) / 1000;
 
-function setters(el: Element): Transformable {
-  // quickSetter does not expand the "scale" shorthand, so set both axes.
-  const sx = gsap.quickSetter(el, "scaleX") as Setter;
-  const sy = gsap.quickSetter(el, "scaleY") as Setter;
-  return {
-    x: gsap.quickSetter(el, "x", "px") as Setter,
-    y: gsap.quickSetter(el, "y", "px") as Setter,
-    scale: (v) => {
-      sx(v);
-      sy(v);
-    },
-    scaleX: sx,
-    scaleY: sy,
-    rotation: gsap.quickSetter(el, "rotation", "deg") as Setter,
+/**
+ * One transform write per element per frame (translate, rotate, scale about
+ * the centre), skipped when nothing changed. Separate quickSetters per
+ * property would rebuild and rewrite the transform five times a frame.
+ */
+function transformWriter(el: HTMLElement) {
+  let last = "";
+  return (x: number, y: number, rot: number, sx: number, sy: number) => {
+    const t = `translate3d(${r3(x)}px, ${r3(y)}px, 0) rotate(${r3(rot)}deg) scale(${r3(sx)}, ${r3(sy)})`;
+    if (t === last) return;
+    last = t;
+    el.style.transform = t;
   };
 }
 
@@ -58,10 +56,10 @@ export function createCamera(stage: HTMLElement, reduce: boolean) {
   const streaks = stage.querySelector('[data-el="whip"]');
   const streakOpacity = streaks ? (gsap.quickSetter(streaks, "opacity") as Setter) : () => {};
 
-  const wrapperEl = stage.querySelector("[data-camera]");
-  const wrapper = wrapperEl ? setters(wrapperEl) : null;
+  const wrapperEl = stage.querySelector<HTMLElement>("[data-camera]");
+  const wrapper = wrapperEl ? transformWriter(wrapperEl) : null;
   const layers = Array.from(stage.querySelectorAll<HTMLElement>("[data-camera] [data-parallax-speed]"))
-    .map((el) => ({ speed: Number(el.dataset.parallaxSpeed) || 0, set: setters(el) }))
+    .map((el) => ({ speed: Number(el.dataset.parallaxSpeed) || 0, set: transformWriter(el) }))
     .filter((l) => l.speed !== 1);
 
   function apply() {
@@ -78,15 +76,9 @@ export function createCamera(stage: HTMLElement, reduce: boolean) {
     // Whip pan: stretch along the pan and show speed streaks (transform and
     // opacity only). Skipped for reduced motion.
     const blur = reduce ? 0 : cam.blur;
-    streakOpacity(blur * 0.85);
+    streakOpacity(r3(blur * 0.85));
 
-    if (wrapper) {
-      wrapper.x(px);
-      wrapper.y(py);
-      wrapper.scaleX(zoom * (1 + 0.07 * blur));
-      wrapper.scaleY(zoom);
-      wrapper.rotation(rot);
-    }
+    wrapper?.(px, py, rot, zoom * (1 + 0.07 * blur), zoom);
 
     // Reduced motion: no depth parallax, every layer moves with the wrapper.
     if (reduce) return;
@@ -97,10 +89,8 @@ export function createCamera(stage: HTMLElement, reduce: boolean) {
       const k = Math.max(0, 1 + (layer.speed - 1) * cam.depth);
       const vx = px * (k - 1);
       const vy = py * (k - 1);
-      layer.set.x((vx * cos + vy * sin) / zoom);
-      layer.set.y((-vx * sin + vy * cos) / zoom);
-      layer.set.scale((1 + (zoom - 1) * k) / zoom);
-      layer.set.rotation(rot * (k - 1));
+      const sc = (1 + (zoom - 1) * k) / zoom;
+      layer.set((vx * cos + vy * sin) / zoom, (-vx * sin + vy * cos) / zoom, rot * (k - 1), sc, sc);
     }
   }
 
