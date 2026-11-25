@@ -1,6 +1,7 @@
 import type { ActId } from "@/config/acts";
 import type { ActContext } from "../master";
 import { alarm } from "./alarm";
+import { boot } from "./boot";
 import { coffee } from "./coffee";
 import { dark } from "./dark";
 
@@ -12,7 +13,7 @@ export const ACT_BUILDERS: Record<ActId, (ctx: ActContext) => void> = {
   dark: dark,
   alarm: alarm,
   coffee: coffee,
-  boot: pending,
+  boot: boot,
   focus: pending,
   break: pending,
   multitask: pending,
