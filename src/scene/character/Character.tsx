@@ -4,7 +4,7 @@ import { Limb } from "./Limb";
 import { POSES } from "./poses";
 
 function Shoe() {
-  return <path d="M-12 52H12A12 12 0 0 1 24 64V72H-12Z" fill="var(--ink)" />;
+  return <path d="M-12 70H12A12 12 0 0 1 24 82V90H-12Z" fill="var(--ink)" />;
 }
 
 function Hand({ color }: { color: string }) {
@@ -98,7 +98,7 @@ export function Character() {
                     <Limb
                       joint="legFarL"
                       at={[0, 70]}
-                      length={56}
+                      length={74}
                       width={23}
                       color="var(--indigo-dark)"
                       rotate={p.legFarL}
@@ -117,7 +117,7 @@ export function Character() {
                     <Limb
                       joint="legNearL"
                       at={[0, 70]}
-                      length={56}
+                      length={74}
                       width={24}
                       color="var(--indigo)"
                       rotate={p.legNearL}

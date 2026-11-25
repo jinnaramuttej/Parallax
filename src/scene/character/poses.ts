@@ -22,9 +22,12 @@ export const ROTATION_JOINTS = [
 export type RotationJoint = (typeof ROTATION_JOINTS)[number];
 export type Pose = Record<RotationJoint, number> & { x: number; y: number };
 
-/** Hip height when standing on the floor / sitting on the chair. */
-export const STAND_Y = 618;
-export const SIT_Y = 677;
+/**
+ * Hip height standing (thigh 70 + shin and shoe 90 above the floor at 760)
+ * and seated (thighs resting on the chair seat at 674, feet on the floor).
+ */
+export const STAND_Y = 600;
+export const SIT_Y = 668;
 
 const stand: Pose = {
   x: 700,
@@ -42,20 +45,22 @@ const stand: Pose = {
   legNearL: 0,
 };
 
+// Thighs along the seat, near shin straight down to the floor, far foot
+// tucked back under the chair.
 const sit = {
   x: 600,
   y: SIT_Y,
   body: 0,
   legNearU: -88,
-  legNearL: 84,
+  legNearL: 88,
   legFarU: -84,
-  legFarL: 80,
+  legFarL: 103,
 };
 
 export const POSES = {
   asleep: {
     ...stand,
-    x: 278,
+    x: 270,
     y: 640,
     body: -90,
     head: -6,
@@ -117,15 +122,16 @@ export const POSES = {
     legNearU: 22,
     legNearL: 30,
   },
+  // Leaning in toward the keyboard, elbows on the desk edge, hands on keys.
   typing: {
     ...stand,
     ...sit,
-    torso: 10,
-    head: -2,
-    armFarU: -74,
-    armFarL: -30,
-    armNearU: -70,
-    armNearL: -38,
+    torso: 16,
+    head: -12,
+    armFarU: -56,
+    armFarL: -70,
+    armNearU: -60,
+    armNearL: -64,
   },
   leanBack: {
     ...stand,
@@ -137,10 +143,11 @@ export const POSES = {
     armFarL: -96,
     armNearU: -145,
     armNearL: -100,
+    // Legs stretched out, heels on the floor.
     legNearU: -80,
-    legNearL: 70,
+    legNearL: 50,
     legFarU: -76,
-    legFarL: 66,
+    legFarL: 42,
   },
   atFridge: {
     ...stand,

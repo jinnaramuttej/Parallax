@@ -33,18 +33,21 @@ export function Wall() {
         <rect x="-700" y="866" width="3000" height="5" />
         <rect x="-700" y="940" width="3000" height="6" />
       </g>
-      <rect
-        x="520"
-        y="772"
-        width="620"
-        height="50"
-        rx="25"
-        fill="var(--indigo)"
+      {/* Rug: flat, wide, in floor perspective; the chair stands on it. */}
+      <path d="M470 748H1010L1050 790H430Z" fill="var(--indigo)" />
+      <path
+        d="M492 753H988L1018 785H462Z"
+        fill="none"
+        stroke="var(--indigo-dark)"
+        strokeWidth="4"
       />
-      <g fill="var(--indigo-dark)">
-        <rect x="560" y="784" width="540" height="5" rx="2.5" />
-        <rect x="560" y="805" width="540" height="5" rx="2.5" />
-      </g>
+      <path d="M454 769H1026" stroke="var(--indigo-dark)" strokeWidth="3" />
+      <path
+        d="M466.2 752h-10M460.5 758h-10M454.8 764h-10M449.0 770h-10M443.3 776h-10M437.6 782h-10M431.9 788h-10M1013.8 752h10M1019.5 758h10M1025.2 764h10M1031.0 770h10M1036.7 776h10M1042.4 782h10M1048.1 788h10"
+        stroke="var(--indigo-dark)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
     </g>
   );
 }
