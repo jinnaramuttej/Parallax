@@ -10,6 +10,8 @@ export const ANIME_LINES = [
 ];
 
 const RAYS = Array.from({ length: 22 }, (_, i) => (i / 22) * Math.PI * 2);
+/** Polar point, rounded so server and client render identical strings. */
+const pt = (a: number, r: number) => `${(Math.cos(a) * r).toFixed(2)} ${(Math.sin(a) * r).toFixed(2)}`;
 
 /**
  * An original flat-vector anime-style scene (no real show or characters):
@@ -56,7 +58,7 @@ export function AnimeVideo({
           {RAYS.map((a, i) => (
             <path
               key={i}
-              d={`M${Math.cos(a) * 18} ${Math.sin(a) * 18}L${Math.cos(a - 0.03) * 140} ${Math.sin(a - 0.03) * 140}L${Math.cos(a + 0.03) * 140} ${Math.sin(a + 0.03) * 140}Z`}
+              d={`M${pt(a, 18)}L${pt(a - 0.03, 140)}L${pt(a + 0.03, 140)}Z`}
               fill="#fff"
               opacity={i % 3 === 0 ? 0.55 : 0.28}
             />
