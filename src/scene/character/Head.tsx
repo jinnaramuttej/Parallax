@@ -5,7 +5,7 @@
 export function Head() {
   return (
     <g data-j="look">
-      <circle cx="4" cy="-30" r="30" fill="var(--skin)" />
+      <circle data-face cx="4" cy="-30" r="30" fill="var(--skin)" />
       <ellipse cx="-8" cy="-28" rx="6" ry="8" fill="var(--skin-dark)" />
       <path
         d="M-27 -24C-32 -58 0 -74 26 -60C34 -54 37 -46 35 -40C22 -47 8 -47 -3 -43C-8 -35 -11 -29 -11 -18C-18 -15 -24 -17 -27 -24Z"

@@ -1,6 +1,5 @@
 import { gsap } from "@/lib/gsap";
 import { catEyes } from "../catRig";
-import { exitCopy, showCopyNow } from "../copy";
 import type { ActContext } from "../master";
 import { rgb } from "./shared";
 
@@ -10,10 +9,7 @@ import { rgb } from "./shared";
  * Light: night blue, the first hint of dawn in the window.
  * Surprise: the cat opens its eyes in the dark, a minute before the alarm.
  */
-export function dark({ tl, el, q, copy, cat }: ActContext) {
-  showCopyNow(copy.get("dark"));
-  exitCopy(tl, copy.get("dark"), 0.03);
-
+export function dark({ tl, el, q, cat }: ActContext) {
   gsap.set(el("zzz"), { opacity: 1 });
   gsap.set(el("beam-morning"), { opacity: 0.1 });
   rgb(tl, q, "off", 0);

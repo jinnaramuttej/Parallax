@@ -7,7 +7,7 @@ import { ACT_BUILDERS } from "./acts";
 import { createCamera } from "./camera";
 import { createCatRig, startCatIdle, type CatRigHandle } from "./catRig";
 import { addCameraDirection } from "./cameraDirector";
-import { splitCopy } from "./copy";
+import { buildCaptions } from "./captions";
 import { createRig, type Rig } from "./rig";
 import { createWorld } from "./world";
 
@@ -25,7 +25,6 @@ export type ActContext = BuildContext & {
   /** The room cat and the one that ends up on his shoulder. */
   cat: CatRigHandle;
   shoulderCat: CatRigHandle;
-  copy: ReturnType<typeof splitCopy>;
   el: (name: string) => Element;
 };
 
@@ -48,12 +47,15 @@ export function buildMasterTimeline({
   const world = createWorld(stage);
   const tl = gsap.timeline({ paused: true, defaults: { ease: "none" }, onUpdate: render });
 
+  let captions: ReturnType<typeof buildCaptions> | null = null;
+
   function render() {
     const progress = tl.progress();
     dayStore.set(progress);
     // The clock comes from the time map, never from raw scroll.
     world.apply(timeAt(progress));
     camera.apply();
+    captions?.update(progress);
   }
 
   const q = gsap.utils.selector(stage);
@@ -63,7 +65,6 @@ export function buildMasterTimeline({
     rig: createRig(q),
     cat: createCatRig(q, "room"),
     shoulderCat: createCatRig(q, "shoulder"),
-    copy: splitCopy(ctx),
     el: (name) => q(`[data-el="${name}"]`)[0],
   };
 
@@ -72,6 +73,8 @@ export function buildMasterTimeline({
 
   addCameraDirection(tl, camera.cam);
   for (const act of ACTS) ACT_BUILDERS[act.id](actCtx);
+  // Comic captions and SFX words (src/config/captions.ts), placed clear of his face, the screens and the HUD.
+  captions = buildCaptions(ctx);
 
   // Exactly one unit long, so tl.progress() === tl.time() === day progress.
   tl.set({}, {}, 1);

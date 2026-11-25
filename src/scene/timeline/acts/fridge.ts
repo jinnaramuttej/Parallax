@@ -2,7 +2,6 @@ import { MOMENTS } from "@/config/acts";
 import { CAT_SPOTS } from "../../character/catPoses";
 import { POSES } from "../../character/poses";
 import { catFace, catPose, catWalk } from "../catRig";
-import { exitCopy, revealCopy } from "../copy";
 import { fadeTo, wiggle } from "../fx";
 import type { ActContext } from "../master";
 import { express, poseTo, turn, walk } from "../rig";
@@ -16,7 +15,7 @@ import { canAppears, rgb, typingWiggle } from "./shared";
  * Light: the fridge's cold spill on the floor; green underglow.
  * Surprise: a shooting star crosses the window.
  */
-export function fridge({ tl, el, q, copy, rig, cat }: ActContext) {
+export function fridge({ tl, el, q, rig, cat }: ActContext) {
   const [open, close] = MOMENTS.fridgeDoorOpen;
   tl.to(el("fridge-door"), { scaleX: -0.55, svgOrigin: "1502 632", duration: 0.01, ease: "power2.out" }, open);
   fadeTo(tl, el("fridge-spill"), open, 0.01, 0.75);
@@ -34,9 +33,6 @@ export function fridge({ tl, el, q, copy, rig, cat }: ActContext) {
   express(tl, rig, { eyes: "closed" }, 0.822);
   express(tl, rig, { eyes: "open", mouth: "smile" }, 0.83);
   poseTo(tl, rig, "holdCan", 0.832, 0.006);
-
-  revealCopy(tl, copy.get("fridge"), 0.79);
-  exitCopy(tl, copy.get("fridge"), 0.84);
 
   const star = el("shooting-star");
   tl.fromTo(star, { xPercent: -100, opacity: 0 }, { xPercent: 290, duration: 0.02, ease: "power1.in", immediateRender: false }, 0.82);

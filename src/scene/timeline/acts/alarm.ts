@@ -1,6 +1,5 @@
 import { CAT_SPOTS } from "../../character/catPoses";
 import { catFace, catJump, catMove, catPose } from "../catRig";
-import { exitCopy, revealCopy } from "../copy";
 import { fadeTo, flash, shake, wiggle } from "../fx";
 import type { ActContext } from "../master";
 import { express, poseTo } from "../rig";
@@ -12,7 +11,7 @@ import { express, poseTo } from "../rig";
  * Light: red alarm pulses over the dawn, the first sun beam.
  * Surprise: the cat's startle leap.
  */
-export function alarm({ tl, el, copy, rig, cat, reduce }: ActContext) {
+export function alarm({ tl, el, rig, cat, reduce }: ActContext) {
   const ring = el("alarm-ring");
   tl.set(ring, { opacity: 1 }, 0.046);
   wiggle(tl, el("alarm"), 0.046, 0.03, 14);
@@ -39,9 +38,6 @@ export function alarm({ tl, el, copy, rig, cat, reduce }: ActContext) {
   poseTo(tl, rig, "stretch", 0.092, 0.012);
   express(tl, rig, { eyes: "closed" }, 0.096);
   express(tl, rig, { eyes: "open", mouth: "smile" }, 0.108);
-
-  revealCopy(tl, copy.get("alarm"), 0.084);
-  exitCopy(tl, copy.get("alarm"), 0.122);
 
   fadeTo(tl, el("beam-morning"), 0.06, 0.04, 0.28);
 }

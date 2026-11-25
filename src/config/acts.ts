@@ -5,7 +5,8 @@ import type { ShotType } from "./shots";
  * THE DIRECTOR'S SCRIPT. The day is a sequence of acts, each owning a slice
  * of day progress (0 = 5:59 AM, 1 = 3 AM). This array is the single source
  * of truth that scroll (linger zones, page length), the HUD chips and
- * counters, the camera, captions, and later autoplay and audio read from.
+ * counters, the camera, captions (src/config/captions.ts lists each act's),
+ * autoplay and audio read from.
  *
  * Acts start exactly on time-map keys, so a chip jump lands on its label's
  * time (the 7 AM chip lands at 7:00).
@@ -62,8 +63,8 @@ export type Act = {
   /** Progress span inside the act where scrolling slows down. */
   linger: [number, number];
   camera: ActCamera;
+  /** Voice line id (src/config/voice.ts), if the act has one. */
   voice: string;
-  caption: string;
   sfx: string[];
   /** Counter bumps (day progress). */
   events: { cans: number[]; commits: number[] };
@@ -90,7 +91,6 @@ export const ACTS: Act[] = [
     linger: [0, 0.035],
     camera: { shot: "wide", focus: [760, 470], arrive: [0, 0] },
     voice: "",
-    caption: "cap.alarm",
     sfx: ["sfx.room-tone"],
   }),
   act({
@@ -101,7 +101,6 @@ export const ACTS: Act[] = [
     linger: [0.05, 0.11],
     camera: { shot: "pushIn", focus: [330, 560], arrive: [0.04, 0.058] },
     voice: "wake_1",
-    caption: "cap.wake",
     sfx: ["sfx.alarm", "sfx.meow"],
   }),
   act({
@@ -117,7 +116,6 @@ export const ACTS: Act[] = [
       moves: [{ at: [0.184, 0.198], focus: [650, 500], zoom: 1.22 }],
     },
     voice: "coffee_1",
-    caption: "cap.desk",
     sfx: ["sfx.footsteps", "sfx.sip"],
   }),
   act({
@@ -138,7 +136,6 @@ export const ACTS: Act[] = [
       ],
     },
     voice: "boot_1",
-    caption: "",
     sfx: ["sfx.boot", "sfx.keys"],
     events: { commits: [0.332] },
   }),
@@ -150,7 +147,6 @@ export const ACTS: Act[] = [
     linger: [0.345, 0.385],
     camera: { shot: "orbit", focus: [770, 500], arrive: [0.328, 0.346] },
     voice: "",
-    caption: "cap.focus",
     sfx: ["sfx.keys-fast"],
     events: { commits: [0.36, 0.385, 0.405] },
   }),
@@ -171,7 +167,6 @@ export const ACTS: Act[] = [
       ],
     },
     voice: "anime_1",
-    caption: "",
     sfx: ["sfx.notify", "sfx.whoosh"],
     events: { commits: [0.52, 0.535] },
   }),
@@ -183,7 +178,6 @@ export const ACTS: Act[] = [
     linger: [0.552, 0.622],
     camera: { shot: "split", focus: [760, 500], arrive: [0.54, 0.556] },
     voice: "multi_1",
-    caption: "",
     sfx: ["sfx.keys"],
     events: { cans: [0.56], commits: [0.6, 0.63] },
   }),
@@ -195,7 +189,6 @@ export const ACTS: Act[] = [
     linger: [0.652, 0.788],
     camera: { shot: "orbit", focus: [760, 520], arrive: [0.638, 0.652] },
     voice: "error_1",
-    caption: "cap.bug",
     sfx: ["sfx.error", "sfx.meow"],
     events: { cans: [0.7], commits: [0.725] },
   }),
@@ -207,7 +200,6 @@ export const ACTS: Act[] = [
     linger: [0.783, 0.877],
     camera: { shot: "whipPan", focus: [1280, 560], arrive: [0.745, 0.785] },
     voice: "can_1",
-    caption: "cap.fridge",
     sfx: ["sfx.fridge", "sfx.can-crack"],
     events: { cans: [0.82], commits: [0.86, 0.875] },
   }),
@@ -225,7 +217,6 @@ export const ACTS: Act[] = [
       moves: [{ at: [0.976, 1], focus: [780, 470], zoom: 1, depth: 1.7 }],
     },
     voice: "ship_1",
-    caption: "cap.ship",
     sfx: ["sfx.deploy", "sfx.confetti"],
     events: { cans: [0.9], commits: [0.905, 0.93, 0.95, 0.966] },
   }),

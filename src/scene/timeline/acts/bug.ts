@@ -1,7 +1,6 @@
 import { POSES } from "../../character/poses";
 import { CAT_SPOTS } from "../../character/catPoses";
 import { catFace, catJump, catMove, catPose, catWalk } from "../catRig";
-import { exitCopy, revealCopy } from "../copy";
 import { fadeTo, flash, shake } from "../fx";
 import type { ActContext } from "../master";
 import { setState } from "../propState";
@@ -22,7 +21,7 @@ const KEYS_END = { x: 722, y: 592 };
  * Light: golden-hour beam, red error pulses.
  * Surprise: the cat knocks his can over on the way.
  */
-export function bug({ tl, el, q, copy, rig, cat, reduce }: ActContext) {
+export function bug({ tl, el, q, rig, cat, reduce }: ActContext) {
   fadeTo(tl, el("beam-evening"), 0.646, 0.02, 0.42);
   fadeTo(tl, el("beam-evening"), 0.732, 0.03, 0);
 
@@ -49,9 +48,6 @@ export function bug({ tl, el, q, copy, rig, cat, reduce }: ActContext) {
   catMove(tl, cat, 500, 760, 0.697, 0.009, "power1.inOut");
   catFace(tl, cat, 1, 0.699);
   catPose(tl, cat, "sit", 0.705, 0.004);
-
-  revealCopy(tl, copy.get("bug"), 0.68);
-  exitCopy(tl, copy.get("bug"), 0.728);
 
   // Papers fly off the desk in the panic, then settle on the floor.
   const flights = [

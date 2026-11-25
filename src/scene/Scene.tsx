@@ -26,7 +26,7 @@ import { Stars } from "./layers/Stars";
 import { Camera } from "./Camera";
 import { buildMasterTimeline } from "./timeline/master";
 import { Hud } from "./ui/Hud";
-import { CopyLayer } from "./ui/Copy";
+import { ComicCaptionLayers } from "@/components/ComicCaption";
 import { setupInteractions } from "./interactions";
 import { Confetti } from "./ui/Confetti";
 import { Hotspots } from "./ui/Hotspots";
@@ -131,6 +131,7 @@ export function Scene() {
             <CatLayer />
             <Tints />
             <Glows />
+            <ComicCaptionLayers />
             <ForegroundCable />
             <ForegroundMug />
             <ForegroundLeaves />
@@ -139,7 +140,6 @@ export function Scene() {
         </div>
         <div className="whip-streaks" data-el="whip" aria-hidden />
         <Toast />
-        <CopyLayer />
       </div>
       <Hud />
       <Scrubber />

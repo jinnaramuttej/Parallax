@@ -1,7 +1,6 @@
 import { POSES, type Pose } from "../../character/poses";
 import { CAT_SPOTS } from "../../character/catPoses";
 import { catJump, catMove, catPose, catWalk } from "../catRig";
-import { exitCopy, revealCopy } from "../copy";
 import { fadeTo } from "../fx";
 import type { ActContext } from "../master";
 import { express, poseTo, rotate, walk } from "../rig";
@@ -25,7 +24,7 @@ const BEAN_BAG = { x: 1214, y: 700 };
  * Light: sunrise beams through the window, dust in them.
  * Surprise: the coffee steam curls into a heart.
  */
-export function coffee({ tl, el, q, copy, rig, cat }: ActContext) {
+export function coffee({ tl, el, q, rig, cat }: ActContext) {
   express(tl, rig, { mouth: "smile" }, 0.13);
   walk(tl, rig, POSES.stretch.x, 586, 0.134, 0.04);
   poseTo(tl, rig, "seated", 0.175, 0.008);
@@ -35,9 +34,6 @@ export function coffee({ tl, el, q, copy, rig, cat }: ActContext) {
   catJump(tl, cat, { x: BEAN_BAG.x - 60, y: 760 }, BEAN_BAG, 0.188, 0.008, 22);
   catPose(tl, cat, "asleep", 0.2, 0.01);
   catMove(tl, cat, BEAN_BAG.x, BEAN_BAG.y + 2, 0.2, 0.01);
-
-  revealCopy(tl, copy.get("coffee"), 0.15);
-  exitCopy(tl, copy.get("coffee"), 0.205);
 
   // Fresh coffee steams on the desk.
   const steam = el("steam");

@@ -2,7 +2,6 @@ import { MOMENTS } from "@/config/acts";
 import { CAT_SPOTS } from "../../character/catPoses";
 import { POSES } from "../../character/poses";
 import { catJump } from "../catRig";
-import { revealCopy } from "../copy";
 import { fadeTo, flash } from "../fx";
 import type { ActContext } from "../master";
 import { setState } from "../propState";
@@ -20,7 +19,7 @@ const SHOULDER = { x: 562, y: 572 };
  * Light: the screens flood the room green; rainbow underglow.
  * Surprise: the chair spins as he jumps out of it, cat still on his shoulder.
  */
-export function deploy({ tl, el, q, copy, rig, cat }: ActContext) {
+export function deploy({ tl, el, q, rig, cat }: ActContext) {
   const success = MOMENTS.deploySuccess;
   typingWiggle(tl, rig, 0.885, 0.93 - 0.885);
   canAppears(tl, q, 3, 0.9);
@@ -50,6 +49,4 @@ export function deploy({ tl, el, q, copy, rig, cat }: ActContext) {
   const chair = el("chair");
   const spin = { svgOrigin: "613 700", ease: "power1.inOut", duration: 0.003 };
   [-1, 1, -1, 1].forEach((sx, i) => tl.to(chair, { ...spin, scaleX: sx }, success + 0.002 + i * 0.0035));
-
-  revealCopy(tl, copy.get("deploy"), success + 0.006);
 }

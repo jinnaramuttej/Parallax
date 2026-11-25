@@ -1,4 +1,3 @@
-import { exitCopy, revealCopy } from "../copy";
 import { fadeTo } from "../fx";
 import type { ActContext } from "../master";
 import { setState } from "../propState";
@@ -11,10 +10,8 @@ import { rgb, typingWiggle } from "./shared";
  * Light: the room edges dim into a focus vignette; violet underglow.
  * Surprise: do-not-disturb rings pulse off his head.
  */
-export function focus({ tl, el, q, copy, rig }: ActContext) {
+export function focus({ tl, el, q, rig }: ActContext) {
   rgb(tl, q, "violet", 0.34);
-  revealCopy(tl, copy.get("focus"), 0.344);
-  exitCopy(tl, copy.get("focus"), 0.388);
 
   fadeTo(tl, el("vignette"), 0.34, 0.012, 0.4);
   fadeTo(tl, el("vignette"), 0.4, 0.012, 0);

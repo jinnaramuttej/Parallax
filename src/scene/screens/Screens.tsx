@@ -22,6 +22,8 @@ function Frame({ id, rect, children, transform }: { id: string; rect: Rect; chil
       <g clipPath={`url(#clip-${id})`}>
         <g transform={`translate(${rect.x} ${rect.y})`}>{children}</g>
       </g>
+      {/* The screen's visible area, for layout checks (captions keep off it). */}
+      <rect data-screen-rect={id} x={rect.x} y={rect.y} width={rect.w} height={rect.h} fill="none" />
     </g>
   );
 }
