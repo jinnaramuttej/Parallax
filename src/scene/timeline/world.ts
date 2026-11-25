@@ -57,7 +57,17 @@ const CITY_NIGHT: Key[] = [
   [1110, 0],
   [1250, 1],
 ];
-/** Room lighting, written as CSS variables that the tint/glow layers read. */
+/** Which elements each room light drives (opacity, with a factor). */
+const LIGHT_TARGETS: Record<string, [selector: string, factor: number][]> = {
+  "--dawn": [[".tint-dawn", 1]],
+  "--golden": [[".tint-golden", 1]],
+  "--night": [[".tint-night", 1], [".glow-posters", 0.9]],
+  "--lamp": [[".glow-lamp", 1]],
+  "--glow": [[".glow-screen", 1]],
+  "--lights": [[".glow-lights", 1]],
+};
+
+/** Room lighting levels over the day (applied as opacity, see LIGHT_TARGETS). */
 const ROOM_LIGHT: Record<string, Key[]> = {
   "--dawn": [[330, 0.15], [359, 0.3], [400, 0.4], [470, 0.12], [540, 0]],
   "--night": [[340, 0.75], [380, 0.55], [440, 0.12], [520, 0], [1100, 0], [1170, 0.45], [1260, 0.8]],
@@ -113,14 +123,19 @@ export function createWorld(stage: HTMLElement) {
       o: setter(el, "opacity", `cloudO-${band.key}`),
     };
   });
-  const lightHosts = [q('[data-el="tints"]')[0], q('[data-el="glows"]')[0]].filter(
-    Boolean,
-  ) as HTMLElement[];
-  function setVar(name: string, value: number) {
+  // Room light goes straight onto the few elements that show it, as opacity.
+  // (A CSS variable on the layer would restyle every element under it each frame.)
+  const lightTargets = Object.fromEntries(
+    Object.entries(LIGHT_TARGETS).map(([name, targets]) => [
+      name,
+      targets.flatMap(([sel, factor]) => q(sel).map((el) => ({ el: el as HTMLElement, factor }))),
+    ]),
+  );
+  function setLight(name: string, value: number) {
     const rounded = Math.round(value * 1000) / 1000;
     if (cache.get(name) === rounded) return;
     cache.set(name, rounded);
-    for (const host of lightHosts) host.style.setProperty(name, String(rounded));
+    for (const { el, factor } of lightTargets[name] ?? []) el.style.opacity = String(Math.round(rounded * factor * 1000) / 1000);
   }
 
   const cityNight = ["far", "near"].map((k) =>
@@ -185,7 +200,7 @@ export function createWorld(stage: HTMLElement) {
       c.o(cloudO);
     }
 
-    for (const [name, keys] of Object.entries(ROOM_LIGHT)) setVar(name, curve(keys, t));
+    for (const [name, keys] of Object.entries(ROOM_LIGHT)) setLight(name, curve(keys, t));
 
     const night = curve(CITY_NIGHT, t);
     cityNight.forEach((set) => set(night));

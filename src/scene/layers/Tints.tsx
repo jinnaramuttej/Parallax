@@ -24,8 +24,8 @@ function Tint({ name }: { name: "dawn" | "golden" | "night" | "error" }) {
 
 /**
  * Time-of-day lighting for the room. Each tint is a multiply overlay whose
- * opacity reads a CSS variable (--dawn, --golden, --night) that the world
- * writes from dayProgress. Only opacity ever changes.
+ * opacity the world sets from the clock (dawn, golden, night; see
+ * src/scene/timeline/world.ts). Only opacity ever changes.
  */
 export function Tints() {
   return (

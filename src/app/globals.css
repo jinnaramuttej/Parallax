@@ -197,7 +197,7 @@ body {
   overflow: visible;
 }
 
-/* Room lighting: opacity only, read from CSS variables set by the world. */
+/* Room lighting: opacity only, written by the world (src/scene/timeline/world.ts). */
 .tint,
 .golden-beam,
 .glow,
@@ -220,13 +220,13 @@ body {
   overflow: visible;
 }
 .tint-dawn {
-  opacity: var(--dawn, 0);
+  opacity: 0;
 }
 .tint-golden {
-  opacity: var(--golden, 0);
+  opacity: 0;
 }
 .tint-night {
-  opacity: var(--night, 0);
+  opacity: 0;
 }
 .tint-error {
   opacity: 0;
@@ -241,11 +241,11 @@ body {
 }
 .glow-lamp {
   background: radial-gradient(closest-side at 46% 44%, var(--lamp-glow), transparent);
-  opacity: var(--lamp, 0);
+  opacity: 0;
 }
 .glow-screen {
   background: radial-gradient(closest-side at 62% 40%, var(--screen-glow), transparent);
-  opacity: var(--glow, 0);
+  opacity: 0;
 }
 /* Soft pool of cold light from the open fridge, mostly on the floor. */
 .glow-spill {
@@ -878,10 +878,10 @@ body {
   will-change: opacity;
 }
 .glow-lights {
-  opacity: var(--lights, 0);
+  opacity: 0;
 }
 .glow-posters {
-  opacity: calc(var(--night, 0) * 0.9);
+  opacity: 0;
 }
 .glow-lights > svg,
 .glow-posters > svg {
