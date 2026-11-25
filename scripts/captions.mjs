@@ -88,7 +88,7 @@ for (const [id, prs] of Object.entries(windows)) {
 }
 
 // Voice balloons: show each one at its trigger.
-const VOICE_AT = { wake_1: 0.062, coffee_1: 0.176, boot_1: 0.226, anime_1: 0.4635, multi_1: 0.566, error_1: 0.706, can_1: 0.798, ship_1: 0.97 };
+const VOICE_AT = { wake_1: 0.079, coffee_1: 0.176, boot_1: 0.226, anime_1: 0.4635, multi_1: 0.566, error_1: 0.706, can_1: 0.798, ship_1: 0.97 };
 for (const [id, at] of Object.entries(VOICE_AT)) {
   await seek(at);
   await page.evaluate((id) => window.__captions.showBalloon(id), id);

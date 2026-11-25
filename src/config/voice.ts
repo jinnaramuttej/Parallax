@@ -34,7 +34,8 @@ const line = (id: string, text: string, act: ActId, at: number, extra: Partial<V
 });
 
 export const VOICE: VoiceLine[] = [
-  line("wake_1", "Ugh… five more minutes. …Nope. Time to lock in.", "alarm", 0.062, { rate: 0.95 }),
+  // After he slaps the alarm off (0.076), so it never stacks with BRRRING!!
+  line("wake_1", "Ugh… five more minutes. …Nope. Time to lock in.", "alarm", 0.079, { rate: 0.95 }),
   line("coffee_1", "Coffee first. Code second.", "coffee", 0.176),
   line("boot_1", "Alright. Let's ship something.", "boot", 0.226),
   line("anime_1", "Wait… Darn it, I'm watching anime again. Time to get back.", "break", 0.4635, { rate: 1.1 }),

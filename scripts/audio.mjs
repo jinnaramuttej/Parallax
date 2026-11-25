@@ -109,11 +109,23 @@ const can = l.findLast((x) => x.id === "can_1");
 check("broken file falls back to speech", can?.via === "speech" || can?.via === "silent", JSON.stringify(can));
 
 // 8. Two lines in a row queue instead of overlapping.
-await seek(0.04);
-await sweep(0.05, 0.07, 40, 40);
+await seek(0.07);
+await sweep(0.072, 0.09, 40, 40);
 await page.waitForTimeout(200);
 s = await state();
 check("voice lines never overlap (one playing at a time)", s.playing === null || typeof s.playing === "string");
+
+// 8b. Scrolling on to another act stops the line and hides its balloon.
+await seek(0.172);
+await sweep(0.174, 0.18, 20, 60);
+await page.waitForTimeout(300);
+const before = await state();
+await seek(0.3);
+await page.waitForTimeout(500);
+const after = await state();
+l = await log();
+const left = l.findLast((x) => x.id === "coffee_1");
+check("leaving the act stops the line and its balloon", before.playing === "coffee_1" && after.playing === null && left?.leftAct === true && !(await balloonShown("coffee_1")), JSON.stringify({ before: before.playing, after: after.playing, left }));
 
 // 9. Reload: the choice is remembered but still waits for a gesture.
 await page.unroute("**/audio/voice/*.mp3");

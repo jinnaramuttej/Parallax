@@ -1,4 +1,5 @@
 import { HUM_SPAN, SFX_CUES, TYPING_SPANS } from "@/config/sfx";
+import { actById } from "@/config/acts";
 import { VOICE, type VoiceLine } from "@/config/voice";
 import { dayStore } from "@/scene/dayStore";
 import { hideBalloon, showBalloon } from "@/scene/timeline/captions";
@@ -12,6 +13,14 @@ const WINDOW = 0.006;
 const STALE = 0.03;
 /** One progress jump bigger than this (a chip jump) fires nothing. */
 const JUMP = 0.02;
+/** A line stops once the day is this far outside its act. */
+const ACT_MARGIN = 0.004;
+
+/** Is the day still inside the act a line belongs to? */
+function inAct(line: VoiceLine, p: number) {
+  const act = actById(line.trigger.act);
+  return p >= act.startProgress - ACT_MARGIN && p <= act.endProgress + ACT_MARGIN;
+}
 
 export type VoiceLog = {
   id: string;
@@ -21,6 +30,8 @@ export type VoiceLog = {
   completed?: boolean;
   via?: string;
   skipped?: "fast" | "stale";
+  /** Stopped early because the visitor scrolled out of its act. */
+  leftAct?: boolean;
 };
 
 declare global {
@@ -53,7 +64,7 @@ export function startAudioDirector() {
   const fired = new Set<string>();
   const queue: { line: VoiceLine; at: number }[] = [];
   const log: VoiceLog[] = [];
-  let playing: { id: string; stop: () => void } | null = null;
+  let playing: { id: string; line: VoiceLine; entry: VoiceLog; stop: () => void } | null = null;
   let last = dayStore.get();
   let lastTime = performance.now();
   let lastKeys = 0;
@@ -64,7 +75,7 @@ export function startAudioDirector() {
     const progress = dayStore.get();
     while (queue.length) {
       const item = queue.shift()!;
-      if (progress - item.line.trigger.at > STALE || progress < item.line.trigger.at - 0.01) {
+      if (progress - item.line.trigger.at > STALE || progress < item.line.trigger.at - 0.01 || !inAct(item.line, progress)) {
         log.push({ id: item.line.id, at: item.line.trigger.at, started: performance.now(), skipped: "stale" });
         continue;
       }
@@ -72,7 +83,7 @@ export function startAudioDirector() {
       log.push(entry);
       const balloon = showBalloon(item.line.balloon);
       const playback = a.playVoice(item.line);
-      playing = { id: item.line.id, stop: playback.stop };
+      playing = { id: item.line.id, line: item.line, entry, stop: playback.stop };
       void playback.done.then((r) => {
         entry.ended = performance.now();
         entry.completed = r.completed;
@@ -121,6 +132,14 @@ export function startAudioDirector() {
         a.sfx("keys");
       }
     }
+    // Scrolled on to another part of the day: the line (and its balloon) stops
+    // there, and queued lines from other acts are dropped.
+    if (playing && !inAct(playing.line, p)) {
+      playing.entry.leftAct = true;
+      playing.stop();
+    }
+    for (let i = queue.length - 1; i >= 0; i--) if (!inAct(queue[i].line, p)) queue.splice(i, 1);
+
     if (p >= HUM_SPAN[0] && p <= HUM_SPAN[1]) a.startFridgeHum();
     else a.stopFridgeHum();
 
