@@ -3,6 +3,7 @@ import type { ActContext } from "../master";
 import { alarm } from "./alarm";
 import { boot } from "./boot";
 import { breakAct } from "./break";
+import { bug } from "./bug";
 import { coffee } from "./coffee";
 import { dark } from "./dark";
 import { focus } from "./focus";
@@ -20,7 +21,7 @@ export const ACT_BUILDERS: Record<ActId, (ctx: ActContext) => void> = {
   focus: focus,
   break: breakAct,
   multitask: multitask,
-  bug: pending,
+  bug: bug,
   fridge: pending,
   deploy: pending,
 };
