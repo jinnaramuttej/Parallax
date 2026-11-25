@@ -4,18 +4,21 @@ import { ACTS } from "./acts";
  * How scroll maps to day progress.
  *
  * The scene's scroll track is SCROLL_VH small-viewport heights long, plus
- * one viewport for the sticky stage: 1200vh of page in total.
+ * one viewport for the sticky stage: 1400vh of page in total.
  *
  * Each act has a linger span (acts.ts). Inside it, scrolling advances the
  * day LINGER times more slowly, so the important moments hold; between
  * acts the day travels faster. Resistance eases in and out over RAMP so the
  * change in pace is never felt as a bump.
  */
-export const SCROLL_VH = 1100;
+export const SCROLL_VH = 1300;
 export const LINGER = 2.4;
 const RAMP = 0.012;
 /** No act may get less scroll than this. */
 export const MIN_ACT_VH = 60;
+/** The big acts get at least this much. */
+export const MIN_BIG_ACT_VH = 120;
+export const BIG_ACTS = ["boot", "break", "multitask", "bug"];
 
 const smoothstep = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -75,6 +78,7 @@ export const ACT_SCROLL_VH = ACTS.map((act) => ({
 
 if (process.env.NODE_ENV !== "production") {
   for (const { id, vh } of ACT_SCROLL_VH) {
-    if (vh < MIN_ACT_VH) console.warn(`[scroll] act "${id}" only gets ${vh.toFixed(0)}vh of scroll (min ${MIN_ACT_VH})`);
+    const min = BIG_ACTS.includes(id) ? MIN_BIG_ACT_VH : MIN_ACT_VH;
+    if (vh < min) console.warn(`[scroll] act "${id}" only gets ${vh.toFixed(0)}vh of scroll (min ${min})`);
   }
 }

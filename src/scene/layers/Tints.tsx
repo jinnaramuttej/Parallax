@@ -4,21 +4,19 @@ import { WINDOW } from "../room/Wall";
 import { Dust } from "../room/life/Dust";
 import { box } from "../viewport";
 
-// Everything except the window (the sky has its own colours) and the
-// monitor screen (it stays bright at night).
-const ROOM_MASK = [
-  "M-700 -500H2300V1500H-700Z",
-  `M${WINDOW.x} ${WINDOW.y}V${WINDOW.y + WINDOW.h}H${WINDOW.x + WINDOW.w}V${WINDOW.y}Z`,
-  screenPath("main"),
-  screenPath("second"),
-  screenPath("laptop"),
-].join(" ");
+// Everything except the window (the sky has its own colours).
+const ROOM = ["M-700 -500H2300V1500H-700Z", `M${WINDOW.x} ${WINDOW.y}V${WINDOW.y + WINDOW.h}H${WINDOW.x + WINDOW.w}V${WINDOW.y}Z`];
+// The night tint also leaves the screens out, so they stay bright in the
+// dark. The other tints cover them, so whatever walks in front of a screen
+// (the cat on the keyboard) is lit the same as the rest of the room.
+const ROOM_MASK = ROOM.join(" ");
+const NIGHT_MASK = [...ROOM, screenPath("main"), screenPath("second"), screenPath("laptop")].join(" ");
 
 function Tint({ name }: { name: "dawn" | "golden" | "night" | "error" }) {
   return (
     <div className={`tint tint-${name}`} data-el={`tint-${name}`}>
       <svg viewBox="0 0 1600 900">
-        <path d={ROOM_MASK} fillRule="evenodd" fill={`var(--tint-${name})`} />
+        <path d={name === "night" ? NIGHT_MASK : ROOM_MASK} fillRule="evenodd" fill={`var(--tint-${name})`} />
       </svg>
     </div>
   );

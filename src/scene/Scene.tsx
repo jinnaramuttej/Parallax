@@ -12,6 +12,8 @@ import {
 import { CatLayer } from "./layers/CatLayer";
 import { Glows } from "./layers/Glows";
 import { MonitorScreen } from "./layers/MonitorScreen";
+import { AnimeOverlay } from "./layers/AnimeOverlay";
+import { Toast } from "./ui/Toast";
 import { Tints } from "./layers/Tints";
 import { Props } from "./props/Props";
 import { Room, RoomBack } from "./room/Room";
@@ -34,6 +36,7 @@ import { Scrubber } from "./ui/Scrubber";
 import { measureViewport } from "./viewport";
 import { ACTS } from "@/config/acts";
 import {
+  ACT_SCROLL_VH,
   progressFromScroll,
   scrollFromProgress,
   SCROLL_VH,
@@ -87,6 +90,7 @@ export function Scene() {
           clock,
         }),
       ),
+      actScrollVh: ACT_SCROLL_VH,
       timeAt,
       formatClock,
       progressFromScroll,
@@ -121,6 +125,7 @@ export function Scene() {
             <Room />
             <RoomLife />
             <MonitorScreen />
+            <AnimeOverlay />
             <Character />
             <Props />
             <CatLayer />
@@ -132,6 +137,8 @@ export function Scene() {
             <Hotspots />
           </Camera>
         </div>
+        <div className="whip-streaks" data-el="whip" aria-hidden />
+        <Toast />
         <CopyLayer />
       </div>
       <Hud />

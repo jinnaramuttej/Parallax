@@ -8,10 +8,32 @@ import type { ShotType } from "./shots";
  * counters, the camera, captions, and later autoplay and audio read from.
  *
  * Acts start exactly on time-map keys, so a chip jump lands on its label's
- * time (7:00 desk lands at 7:00).
+ * time (the 7 AM chip lands at 7:00).
  */
 
-export type ActId = "alarm" | "wake" | "desk" | "focus" | "bug" | "fridge" | "deploy";
+export type ActId =
+  | "dark"
+  | "alarm"
+  | "coffee"
+  | "boot"
+  | "focus"
+  | "break"
+  | "multitask"
+  | "bug"
+  | "fridge"
+  | "deploy";
+
+/** A camera beat inside an act: move to new framing during `at`. */
+export type CameraMove = {
+  at: [number, number];
+  focus?: [number, number];
+  zoom?: number;
+  rot?: number;
+  depth?: number;
+  ease?: string;
+  /** Whip pan: motion blur (stretch + streaks) peaks mid-move. */
+  whip?: boolean;
+};
 
 export type ActCamera = {
   /** Preset from src/config/shots.ts. */
@@ -23,6 +45,8 @@ export type ActCamera = {
    * in the previous act so the camera follows him (e.g. on a walk).
    */
   arrive: [number, number];
+  /** Extra beats after arriving (close-ups, slides, whip pans, pull-backs). */
+  moves?: CameraMove[];
 };
 
 export type Act = {
@@ -59,96 +83,162 @@ const act = (a: ActInput): Act => ({
 
 export const ACTS: Act[] = [
   act({
-    id: "alarm",
+    id: "dark",
     label: "5:59",
     startProgress: 0,
-    endProgress: 0.04,
+    endProgress: 0.046,
     linger: [0, 0.035],
-    camera: { shot: "pushIn", focus: [280, 580], arrive: [0, 0] },
-    voice: "vo.alarm",
+    camera: { shot: "wide", focus: [760, 470], arrive: [0, 0] },
+    voice: "",
     caption: "cap.alarm",
-    sfx: ["sfx.alarm-ring", "sfx.room-tone"],
+    sfx: ["sfx.room-tone"],
   }),
   act({
-    id: "wake",
-    label: "6:00 wake",
-    startProgress: 0.04,
-    endProgress: 0.2,
-    linger: [0.085, 0.13],
-    camera: { shot: "wide", focus: [520, 520], arrive: [0.04, 0.09] },
-    voice: "vo.wake",
+    id: "alarm",
+    label: "6:00",
+    startProgress: 0.046,
+    endProgress: 0.13,
+    linger: [0.05, 0.11],
+    camera: { shot: "pushIn", focus: [330, 560], arrive: [0.04, 0.058] },
+    voice: "wake_1",
     caption: "cap.wake",
-    sfx: ["sfx.yawn", "sfx.footsteps"],
+    sfx: ["sfx.alarm", "sfx.meow"],
   }),
   act({
-    id: "desk",
-    label: "7:00 desk",
-    startProgress: 0.2,
-    endProgress: 0.46,
-    linger: [0.2, 0.27],
-    camera: { shot: "pushIn", focus: [740, 540], arrive: [0.14, 0.2] },
-    voice: "vo.coffee",
+    id: "coffee",
+    label: "6:20",
+    startProgress: 0.13,
+    endProgress: 0.223,
+    linger: [0.175, 0.215],
+    camera: {
+      shot: "follow",
+      focus: [560, 520],
+      arrive: [0.126, 0.172],
+      moves: [{ at: [0.184, 0.198], focus: [650, 500], zoom: 1.22 }],
+    },
+    voice: "coffee_1",
     caption: "cap.desk",
-    sfx: ["sfx.sip", "sfx.keys"],
-    events: { commits: [0.33, 0.39, 0.44] },
+    sfx: ["sfx.footsteps", "sfx.sip"],
+  }),
+  act({
+    id: "boot",
+    label: "7 AM",
+    startProgress: 0.223,
+    endProgress: 0.338,
+    linger: [0.228, 0.325],
+    camera: {
+      shot: "pushIn",
+      focus: [830, 520],
+      arrive: [0.214, 0.232],
+      moves: [
+        { at: [0.236, 0.252], focus: [738, 516], zoom: 1.9, ease: "sine.inOut" },
+        { at: [0.259, 0.276], focus: [940, 511], zoom: 1.75, ease: "sine.inOut" },
+        { at: [0.283, 0.299], focus: [1111, 566], zoom: 1.9, ease: "sine.inOut" },
+        { at: [0.305, 0.334], focus: [800, 520], zoom: 1.08 },
+      ],
+    },
+    voice: "boot_1",
+    caption: "",
+    sfx: ["sfx.boot", "sfx.keys"],
+    events: { commits: [0.332] },
   }),
   act({
     id: "focus",
-    label: "1 PM",
-    startProgress: 0.46,
-    endProgress: 0.66,
-    linger: [0.46, 0.53],
-    camera: { shot: "pushIn", focus: [770, 520], arrive: [0.44, 0.47] },
-    voice: "vo.focus",
+    label: "10 AM",
+    startProgress: 0.338,
+    endProgress: 0.415,
+    linger: [0.345, 0.385],
+    camera: { shot: "orbit", focus: [770, 500], arrive: [0.328, 0.346] },
+    voice: "",
     caption: "cap.focus",
-    sfx: ["sfx.headphones", "sfx.keys-fast"],
-    events: { cans: [0.475], commits: [0.48, 0.51, 0.55, 0.6] },
+    sfx: ["sfx.keys-fast"],
+    events: { commits: [0.36, 0.385, 0.405] },
+  }),
+  act({
+    id: "break",
+    label: "12:30",
+    startProgress: 0.415,
+    endProgress: 0.546,
+    linger: [0.42, 0.478],
+    camera: {
+      shot: "pushIn",
+      focus: [700, 520],
+      arrive: [0.41, 0.422],
+      moves: [
+        { at: [0.432, 0.446], focus: [738, 516], zoom: 1.6, ease: "power2.inOut" },
+        { at: [0.466, 0.474], focus: [940, 511], zoom: 1.3, ease: "power3.inOut", whip: true, rot: -1.2 },
+        { at: [0.49, 0.51], focus: [770, 520], zoom: 1.08, rot: 0 },
+      ],
+    },
+    voice: "anime_1",
+    caption: "",
+    sfx: ["sfx.notify", "sfx.whoosh"],
+    events: { commits: [0.52, 0.535] },
+  }),
+  act({
+    id: "multitask",
+    label: "3 PM",
+    startProgress: 0.546,
+    endProgress: 0.646,
+    linger: [0.552, 0.622],
+    camera: { shot: "split", focus: [760, 500], arrive: [0.54, 0.556] },
+    voice: "multi_1",
+    caption: "",
+    sfx: ["sfx.keys"],
+    events: { cans: [0.56], commits: [0.6, 0.63] },
   }),
   act({
     id: "bug",
     label: "6 PM",
-    startProgress: 0.66,
-    endProgress: 0.8,
-    linger: [0.66, 0.71],
-    camera: { shot: "orbit", focus: [700, 500], arrive: [0.6, 0.65] },
-    voice: "vo.bug",
+    startProgress: 0.646,
+    endProgress: 0.777,
+    linger: [0.652, 0.788],
+    camera: { shot: "orbit", focus: [760, 520], arrive: [0.638, 0.652] },
+    voice: "error_1",
     caption: "cap.bug",
-    sfx: ["sfx.error", "sfx.paper"],
-    events: { cans: [0.672], commits: [0.75] },
+    sfx: ["sfx.error", "sfx.meow"],
+    events: { cans: [0.7], commits: [0.725] },
   }),
   act({
     id: "fridge",
     label: "11 PM",
-    startProgress: 0.8,
-    endProgress: 0.92,
-    linger: [0.8, 0.845],
-    camera: { shot: "whipPan", focus: [1280, 560], arrive: [0.728, 0.789] },
-    voice: "vo.fridge",
+    startProgress: 0.777,
+    endProgress: 0.885,
+    linger: [0.783, 0.877],
+    camera: { shot: "whipPan", focus: [1280, 560], arrive: [0.745, 0.785] },
+    voice: "can_1",
     caption: "cap.fridge",
-    sfx: ["sfx.fridge-open", "sfx.can-open"],
-    events: { cans: [0.805] },
+    sfx: ["sfx.fridge", "sfx.can-crack"],
+    events: { cans: [0.82], commits: [0.86, 0.875] },
   }),
   act({
     id: "deploy",
     label: "3 AM",
-    startProgress: 0.92,
+    startProgress: 0.885,
     endProgress: 1,
     anchor: 1,
-    linger: [0.94, 1],
-    camera: { shot: "split", focus: [760, 470], arrive: [0.849, 0.915] },
-    voice: "vo.ship",
+    linger: [0.935, 1],
+    camera: {
+      shot: "split",
+      focus: [800, 480],
+      arrive: [0.858, 0.9],
+      moves: [{ at: [0.976, 1], focus: [780, 470], zoom: 1, depth: 1.7 }],
+    },
+    voice: "ship_1",
     caption: "cap.ship",
     sfx: ["sfx.deploy", "sfx.confetti"],
-    events: { cans: [0.935], commits: [0.928, 0.94, 0.95, 0.966] },
+    events: { cans: [0.9], commits: [0.905, 0.93, 0.95, 0.966] },
   }),
 ];
 
-/** Moments other UI listens for (confetti, fridge clicks). */
+/** Moments other UI listens for (confetti, fridge clicks, notifications). */
 export const MOMENTS = {
   /** The deploy goes green: confetti fires here. */
   deploySuccess: 0.966,
   /** The story holds the fridge door open during this span. */
-  fridgeDoorOpen: [0.792, 0.857] as [number, number],
+  fridgeDoorOpen: [0.79, 0.858] as [number, number],
+  /** "Standup in 2 min" pops up over the anime. */
+  standupPing: 0.455,
 };
 
 export const CAN_EVENTS = ACTS.flatMap((a) => a.events.cans);

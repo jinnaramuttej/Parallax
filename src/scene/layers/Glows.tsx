@@ -28,6 +28,10 @@ export function Glows() {
         <RgbStrip state="cyan" />
       </div>
       <div className="glow glow-screen" style={box(500, 400, 440, 360)} />
+      {/* Each screen flashes as it boots (boot act). */}
+      <div className="glow glow-boot" data-el="boot-glow-second" style={box(630, 430, 216, 176)} />
+      <div className="glow glow-boot" data-el="boot-glow-main" style={box(770, 390, 340, 250)} />
+      <div className="glow glow-boot" data-el="boot-glow-laptop" style={box(1046, 506, 130, 116)} />
       <div
         className="glow glow-success"
         data-el="success-flash"

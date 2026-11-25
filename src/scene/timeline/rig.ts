@@ -51,6 +51,8 @@ export function createRig(q: Q) {
     pupil: el("pupil"),
     headphones: el("headphones"),
     handCan: el("hand-can"),
+    handSnack: el("hand-snack"),
+    chair: el("chair"),
   };
 }
 

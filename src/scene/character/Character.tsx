@@ -28,6 +28,18 @@ function HandMug() {
   );
 }
 
+/** A bag of chips in the near hand during the break. */
+function HandSnack() {
+  return (
+    <g data-el="hand-snack" opacity="0">
+      <path d="M-11 40L11 40L13 74L-13 74Z" fill="var(--sun)" />
+      <path d="M-11 40L-8 36L-4 40L0 36L4 40L8 36L11 40Z" fill="var(--sun)" />
+      <circle cx="0" cy="56" r="6" fill="var(--error)" />
+      <path d="M-3 56H3" stroke="var(--paper)" strokeWidth="2" strokeLinecap="round" />
+    </g>
+  );
+}
+
 /** Can held in the near hand during the fridge run. */
 function HandCan() {
   return (
@@ -164,7 +176,7 @@ export function Character() {
                     </Limb>
                     <Torso />
                     {/* The cat across his shoulders (finale), hidden until then. */}
-                    <g data-el="shoulder-cat" opacity="0" transform="translate(-24 -100) scale(0.92)">
+                    <g data-el="shoulder-cat" opacity="0" transform="translate(-40 -98) scale(0.95)">
                       <CatRig which="shoulder" pose="shoulder" face={-1} />
                     </g>
                     <g transform="translate(4 -114)">
@@ -191,6 +203,7 @@ export function Character() {
                         <HandMug />
                         <Hand color="var(--skin)" />
                         <HandCan />
+                        <HandSnack />
                       </Limb>
                     </Limb>
                   </g>

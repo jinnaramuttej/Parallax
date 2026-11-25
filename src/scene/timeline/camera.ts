@@ -7,6 +7,7 @@ import { CANVAS_H, CANVAS_W, viewport } from "../viewport";
  * fx/fy: point of the room (canvas units) to keep centred on screen.
  * zoom: 1 = canvas fits the stage. rot: tilt in degrees.
  * dx/dy: extra drift in canvas units.
+ * blur: whip-pan motion blur, 0-1 (horizontal stretch plus speed streaks).
  */
 export type CameraState = {
   fx: number;
@@ -17,10 +18,11 @@ export type CameraState = {
   dy: number;
   /** Parallax spread: >1 pushes layers further apart, <1 flattens them. */
   depth: number;
+  blur: number;
 };
 
 type Setter = (v: number) => void;
-type Transformable = { x: Setter; y: Setter; scale: Setter; rotation: Setter };
+type Transformable = { x: Setter; y: Setter; scale: Setter; scaleX: Setter; scaleY: Setter; rotation: Setter };
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
@@ -35,6 +37,8 @@ function setters(el: Element): Transformable {
       sx(v);
       sy(v);
     },
+    scaleX: sx,
+    scaleY: sy,
     rotation: gsap.quickSetter(el, "rotation", "deg") as Setter,
   };
 }
@@ -50,7 +54,9 @@ function setters(el: Element): Transformable {
  * Room-plane layers (k = 1) ride the wrapper untouched.
  */
 export function createCamera(stage: HTMLElement, reduce: boolean) {
-  const cam: CameraState = { fx: CANVAS_W / 2, fy: CANVAS_H / 2, zoom: 1, rot: 0, dx: 0, dy: 0, depth: 1 };
+  const cam: CameraState = { fx: CANVAS_W / 2, fy: CANVAS_H / 2, zoom: 1, rot: 0, dx: 0, dy: 0, depth: 1, blur: 0 };
+  const streaks = stage.querySelector('[data-el="whip"]');
+  const streakOpacity = streaks ? (gsap.quickSetter(streaks, "opacity") as Setter) : () => {};
 
   const wrapperEl = stage.querySelector("[data-camera]");
   const wrapper = wrapperEl ? setters(wrapperEl) : null;
@@ -69,10 +75,16 @@ export function createCamera(stage: HTMLElement, reduce: boolean) {
     const px = clamp(-(cam.fx - CANVAS_W / 2) * s * zoom, -maxX, maxX) + (reduce ? 0 : cam.dx * s);
     const py = clamp(-(cam.fy - CANVAS_H / 2) * s * zoom, -maxY, maxY) + (reduce ? 0 : cam.dy * s);
 
+    // Whip pan: stretch along the pan and show speed streaks (transform and
+    // opacity only). Skipped for reduced motion.
+    const blur = reduce ? 0 : cam.blur;
+    streakOpacity(blur * 0.85);
+
     if (wrapper) {
       wrapper.x(px);
       wrapper.y(py);
-      wrapper.scale(zoom);
+      wrapper.scaleX(zoom * (1 + 0.07 * blur));
+      wrapper.scaleY(zoom);
       wrapper.rotation(rot);
     }
 

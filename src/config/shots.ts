@@ -9,7 +9,7 @@
  * During the act: push adds zoom, sway swings the tilt to -rot, drift
  * slides sideways (canvas units).
  */
-export type ShotType = "wide" | "pushIn" | "whipPan" | "orbit" | "split";
+export type ShotType = "wide" | "follow" | "pushIn" | "whipPan" | "orbit" | "split";
 
 export type Shot = {
   zoom: number;
@@ -23,6 +23,8 @@ export type Shot = {
 
 export const SHOTS: Record<ShotType, Shot> = {
   wide: { zoom: 1.02, rot: 0, depth: 1.1, ease: "sine.inOut", drift: 14 },
+  /** Tracks him across the room. */
+  follow: { zoom: 1.08, rot: 0, depth: 1.2, ease: "power1.inOut", drift: 6 },
   pushIn: { zoom: 1.1, rot: 0, depth: 0.8, ease: "sine.inOut", push: 0.06, drift: 8 },
   whipPan: { zoom: 1.1, rot: -0.8, depth: 1.25, ease: "power2.inOut", drift: 10 },
   orbit: { zoom: 1.06, rot: 1.2, depth: 1.4, ease: "sine.inOut", sway: true },
