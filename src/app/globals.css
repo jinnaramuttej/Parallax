@@ -103,6 +103,13 @@ body {
   inset: 0;
 }
 
+/* <Camera>: the master timeline transforms this wrapper (pan, zoom, tilt). */
+.scene-camera {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
 /* The 1600x900 design canvas, scaled by --s (see src/scene/viewport.ts). */
 .scene-canvas {
   position: absolute;

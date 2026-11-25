@@ -18,6 +18,7 @@ import { Clouds } from "./layers/Clouds";
 import { Sky } from "./layers/Sky";
 import { Skyline } from "./layers/Skyline";
 import { Stars } from "./layers/Stars";
+import { Camera } from "./Camera";
 import { buildMasterTimeline } from "./timeline/master";
 import { Hud } from "./ui/Hud";
 import { CopyLayer } from "./ui/Copy";
@@ -29,7 +30,11 @@ import { ScrollHint } from "./ui/ScrollHint";
 import { Scrubber } from "./ui/Scrubber";
 import { measureViewport } from "./viewport";
 import { ACTS } from "@/config/acts";
-import { progressFromScroll, scrollFromProgress, SCROLL_VH } from "@/config/scroll";
+import {
+  progressFromScroll,
+  scrollFromProgress,
+  SCROLL_VH,
+} from "@/config/scroll";
 import { formatClock, timeAt } from "@/config/timeMap";
 
 declare global {
@@ -69,14 +74,16 @@ export function Scene() {
 
     const stopInteractions = setupInteractions(stage);
     window.__director = Object.freeze({
-      acts: ACTS.map(({ id, label, startProgress, endProgress, anchor, clock }) => ({
-        id,
-        label,
-        startProgress,
-        endProgress,
-        anchor,
-        clock,
-      })),
+      acts: ACTS.map(
+        ({ id, label, startProgress, endProgress, anchor, clock }) => ({
+          id,
+          label,
+          startProgress,
+          endProgress,
+          anchor,
+          clock,
+        }),
+      ),
       timeAt,
       formatClock,
       progressFromScroll,
@@ -100,21 +107,23 @@ export function Scene() {
       <h1 className="sr-only">24 Hours of a Dev</h1>
       <div ref={stageRef} className="scene-stage" data-scene-stage>
         <div className="scene-shake" data-el="shake">
-          <Sky />
-          <Stars />
-          <Celestial />
-          <Clouds />
-          <Skyline />
-          <Room />
-          <MonitorScreen />
-          <Character />
-          <Props />
-          <Tints />
-          <Glows />
-          <ForegroundCable />
-          <ForegroundMug />
-          <ForegroundLeaves />
-          <Hotspots />
+          <Camera>
+            <Sky />
+            <Stars />
+            <Celestial />
+            <Clouds />
+            <Skyline />
+            <Room />
+            <MonitorScreen />
+            <Character />
+            <Props />
+            <Tints />
+            <Glows />
+            <ForegroundCable />
+            <ForegroundMug />
+            <ForegroundLeaves />
+            <Hotspots />
+          </Camera>
         </div>
         <CopyLayer />
       </div>
