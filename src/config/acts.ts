@@ -98,7 +98,7 @@ export const ACTS: Act[] = [
     startProgress: 0.46,
     endProgress: 0.66,
     linger: [0.46, 0.53],
-    camera: { shot: "pushIn", focus: [790, 520], arrive: [0.44, 0.47] },
+    camera: { shot: "pushIn", focus: [770, 520], arrive: [0.44, 0.47] },
     voice: "vo.focus",
     caption: "cap.focus",
     sfx: ["sfx.headphones", "sfx.keys-fast"],
@@ -110,7 +110,7 @@ export const ACTS: Act[] = [
     startProgress: 0.66,
     endProgress: 0.8,
     linger: [0.66, 0.71],
-    camera: { shot: "orbit", focus: [700, 500], arrive: [0.62, 0.665] },
+    camera: { shot: "orbit", focus: [700, 500], arrive: [0.6, 0.65] },
     voice: "vo.bug",
     caption: "cap.bug",
     sfx: ["sfx.error", "sfx.paper"],
@@ -122,11 +122,11 @@ export const ACTS: Act[] = [
     startProgress: 0.8,
     endProgress: 0.92,
     linger: [0.8, 0.845],
-    camera: { shot: "whipPan", focus: [1280, 560], arrive: [0.735, 0.79] },
+    camera: { shot: "whipPan", focus: [1280, 560], arrive: [0.728, 0.789] },
     voice: "vo.fridge",
     caption: "cap.fridge",
     sfx: ["sfx.fridge-open", "sfx.can-open"],
-    events: { cans: [0.805], commits: [0.905] },
+    events: { cans: [0.805] },
   }),
   act({
     id: "deploy",
@@ -135,11 +135,11 @@ export const ACTS: Act[] = [
     endProgress: 1,
     anchor: 1,
     linger: [0.94, 1],
-    camera: { shot: "split", focus: [760, 470], arrive: [0.85, 0.895] },
+    camera: { shot: "split", focus: [760, 470], arrive: [0.849, 0.915] },
     voice: "vo.ship",
     caption: "cap.ship",
     sfx: ["sfx.deploy", "sfx.confetti"],
-    events: { cans: [0.93], commits: [0.915, 0.95, 0.966] },
+    events: { cans: [0.935], commits: [0.928, 0.94, 0.95, 0.966] },
   }),
 ];
 
@@ -148,7 +148,7 @@ export const MOMENTS = {
   /** The deploy goes green: confetti fires here. */
   deploySuccess: 0.966,
   /** The story holds the fridge door open during this span. */
-  fridgeDoorOpen: [0.783, 0.857] as [number, number],
+  fridgeDoorOpen: [0.792, 0.857] as [number, number],
 };
 
 export const CAN_EVENTS = ACTS.flatMap((a) => a.events.cans);

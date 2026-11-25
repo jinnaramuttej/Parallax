@@ -53,12 +53,12 @@ export function bug({ tl, el, q, copy, rig, reduce }: ActContext) {
   });
 
   // Fix pushed; get up and head for the fridge.
-  express(tl, rig, { mouth: "flat" }, 0.715);
-  poseTo(tl, rig, { ...POSES.stand, x: 640 }, 0.716, 0.014);
+  express(tl, rig, { mouth: "flat" }, 0.711);
+  poseTo(tl, rig, { ...POSES.stand, x: 640 }, 0.706, 0.014);
   screen(tl, el, "error", 0.72, false);
   screen(tl, el, "code", 0.72, true);
-  walk(tl, rig, 640, POSES.atFridge.x, 0.733, 0.05);
-  poseTo(tl, rig, "atFridge", 0.783, 0.012);
+  walk(tl, rig, 640, POSES.atFridge.x, 0.72, 0.07);
+  poseTo(tl, rig, "atFridge", 0.79, 0.008);
 
   const [open] = MOMENTS.fridgeDoorOpen;
   tl.to(el("fridge-door"), { scaleX: -0.55, svgOrigin: "1502 632", duration: 0.014, ease: "power2.out" }, open);

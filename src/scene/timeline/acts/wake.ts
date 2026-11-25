@@ -11,10 +11,10 @@ import { express, poseTo, walk } from "../rig";
  */
 export function wake({ tl, el, copy, rig }: ActContext) {
   express(tl, rig, { eyes: "open", mouth: "o" }, 0.045);
-  poseTo(tl, rig, "sitUp", 0.043, 0.017);
-  tl.to(el("blanket"), { scaleX: 0.55, svgOrigin: "466 670", duration: 0.016, ease: "power2.inOut" }, 0.046);
-  poseTo(tl, rig, "stand", 0.06, 0.015);
-  poseTo(tl, rig, "stretch", 0.078, 0.014);
+  poseTo(tl, rig, "sitUp", 0.043, 0.023);
+  tl.to(el("blanket"), { scaleX: 0.55, svgOrigin: "466 670", duration: 0.02, ease: "power2.inOut" }, 0.046);
+  poseTo(tl, rig, "stand", 0.066, 0.016);
+  poseTo(tl, rig, "stretch", 0.084, 0.014);
 
   revealCopy(tl, copy.get("wake"), 0.088);
   exitCopy(tl, copy.get("wake"), 0.135);

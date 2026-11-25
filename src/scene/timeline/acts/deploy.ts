@@ -13,11 +13,11 @@ import { canAppears, screen } from "./shared";
  */
 export function deploy({ tl, el, q, copy, rig }: ActContext) {
   const success = MOMENTS.deploySuccess;
-  canAppears(tl, q, 3, 0.93);
+  canAppears(tl, q, 3, 0.935);
 
-  screen(tl, el, "code", 0.928, false, 0.003);
-  screen(tl, el, "deploy", 0.928, true, 0.003);
-  tl.fromTo(el("deploy-bar"), scale(0.02, 1), { ...scale(1, 1), duration: success - 0.932, ease: "power1.inOut" }, 0.93);
+  screen(tl, el, "code", 0.935, false, 0.003);
+  screen(tl, el, "deploy", 0.935, true, 0.003);
+  tl.fromTo(el("deploy-bar"), scale(0.02, 1), { ...scale(1, 1), duration: success - 0.939, ease: "power1.inOut" }, 0.937);
   screen(tl, el, "deploy", success, false, 0.003);
   screen(tl, el, "success", success, true, 0.003);
 

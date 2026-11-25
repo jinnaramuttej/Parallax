@@ -40,7 +40,7 @@ export function revealCopy(tl: gsap.core.Timeline, split: Split | undefined, at:
   // The note gets stuck to the wall...
   tl.fromTo(
     split.block,
-    { scale: 1.1, y: -18 },
+    { scale: 1.06, y: 16 },
     { scale: 1, y: 0, duration: 0.18 * U, ease: "back.out(2.2)", immediateRender: false },
     at,
   );
@@ -73,7 +73,7 @@ export function exitCopy(tl: gsap.core.Timeline, split: Split | undefined, at: n
     );
   }
   // ...and peeled off again.
-  tl.to(split.block, { opacity: 0, y: -24, duration: 0.18 * U, ease: "power1.in" }, at + 0.08 * U);
+  tl.to(split.block, { opacity: 0, y: -8, duration: 0.18 * U, ease: "power1.in" }, at + 0.08 * U);
   tl.set(split.block, { visibility: "hidden" }, at + 0.26 * U);
 }
 

@@ -30,11 +30,11 @@ export function fridge({ tl, el, q, copy, rig }: ActContext) {
   fadeTo(tl, el("fridge-spill"), close - 0.012, 0.01, 0);
 
   turn(tl, rig, -1, 0.846);
-  walk(tl, rig, POSES.holdCan.x, 640, 0.85, 0.038);
-  turn(tl, rig, 1, 0.888);
-  tl.set(rig.handCan, { opacity: 0 }, 0.893);
-  poseTo(tl, rig, "typing", 0.892, 0.012);
-  express(tl, rig, { mouth: "flat" }, 0.894);
-  canAppears(tl, q, 2, 0.896);
-  typingWiggle(tl, rig, 0.905, 0.023);
+  walk(tl, rig, POSES.holdCan.x, 640, 0.849, 0.064);
+  turn(tl, rig, 1, 0.913);
+  tl.set(rig.handCan, { opacity: 0 }, 0.917);
+  poseTo(tl, rig, "typing", 0.915, 0.012);
+  express(tl, rig, { mouth: "flat" }, 0.917);
+  canAppears(tl, q, 2, 0.92);
+  typingWiggle(tl, rig, 0.927, 0.008);
 }
