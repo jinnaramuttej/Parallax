@@ -24,7 +24,7 @@ shoulder, confetti, stats finale). Boot, break, multitask and bug get at least 1
 6. No external image dependencies: all art is inline SVG or CSS.
 7. One small, cohesive palette, defined once as CSS variables in `src/app/globals.css`.
 8. After scene changes, screenshot every stop with Playwright (desktop and mobile) and fix layout bugs before committing.
-9. Keep the Vercel deployment live; redeploy after meaningful changes.
+9. Keep the Vercel deployment live: a push to `main` deploys production.
 
 ## Stack
 
@@ -76,5 +76,5 @@ shoulder, confetti, stats finale). Boot, break, multitask and bug get at least 1
 - `npm run dev` / `npm run build` / `npm run lint`
 - Dev server for the preview pane: `.claude/launch.json` (`next-dev`)
 - Checks (Playwright on the installed Chrome): `node scripts/verify-time.mjs --step 2` (clock vs time map, act starts, chip jumps), `node scripts/act-frames.mjs` (5 frames per act + vh per act), `node scripts/captions.mjs [dir] [mobile]` (caption overlaps), `node scripts/audio.mjs`, `node scripts/autoplay.mjs [--quick]`, `node scripts/reduced.mjs`, `node scripts/gallery.mjs`, `node scripts/capdebug.mjs <progress> <out>`, `node scripts/shoot.mjs --mode stops|percent [--viewport mobile] [--reduce]`, `scripts/strip.mjs` (filmstrip), `scripts/audit-layout.mjs`, `scripts/motion.mjs`, `scripts/perf.mjs [--dpr 2]`, `scripts/sync.mjs`, `scripts/net.mjs`. `bash scripts/serve-prod.sh` serves a production build on :3100 for perf runs.
-- Deploy: `npx vercel deploy --prod` (folder is linked to Vercel project `parallax`; no Git integration yet)
+- Deploy: push to `main` (Vercel project `parallax` is connected to GitHub `jinnaramuttej/Parallax`; pushes to other branches get preview deploys). Manual deploy: `npx vercel deploy --prod`
 - Live: https://parallax-three-chi.vercel.app
